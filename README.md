@@ -1,38 +1,23 @@
-# create-svelte
+# Simple collaborative todos
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/main/packages/create-svelte).
+Open the page and start creating to-dos, and your to-dos with others.
 
-## Creating a project
+The goal of this project is to create a simple website where you can keep your own todos and share them with others too.
 
-If you're seeing this, you've probably already done this step. Congrats!
+**No authentication/log-in required!**
 
-```bash
-# create a new project in the current directory
-npm create svelte@latest
+Nothing will be stored on the server, everything will be stored in the shared link.
 
-# create a new project in my-app
-npm create svelte@latest my-app
-```
+Feel free to create PR's if you have a nice idea, but please keep this project simple.
 
-## Developing
+I don't want changes/improvements for this project to be hidden away from the public, so please keep your fork public too if you create any.
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+# Future improvements in no particular order
 
-```bash
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
-
-## Building
-
-To create a production version of your app:
-
-```bash
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+- Ability to edit to-dos
+- Ability to remove to-dos
+- Create server-less static "mode" to host this in Github pages, but that still works with shared links
+- Keep to-dos in local storage and create a history page to show all to-dos in local storage
+- Create an archive button to "throw away" all to-dos currently in view and to start with a clean slate
+- Create import and export button
+- Add live collaboration and database persistence (+ update readme)
