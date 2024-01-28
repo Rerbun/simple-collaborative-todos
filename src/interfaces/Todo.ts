@@ -8,21 +8,4 @@ export class Todo {
 	constructor(title?: string) {
 		this.title = title ?? this.title;
 	}
-
-	public addChild(title: string) {
-		const newTodo = new Todo(title);
-		newTodo.parent = this;
-		this.children.push(newTodo);
-	}
-
-	public static fromObject(todo: Record<string, any>) {
-		return Object.assign(new Todo(), todo);
-	}
-
-	// copy(todo: Todo) {
-	// 	const copy = new Todo();
-	// 	copy.id = todo.id;
-	// 	copy.parent = todo.parent;
-
-	// }
 }

@@ -1,12 +1,15 @@
 <script lang="ts">
 	import Todo from '../components/Todo.svelte';
-	import { Todo as TodoClass } from '../interfaces/Todo';
+	import { Todo as TodoIntance } from '../interfaces/Todo';
+	import { todo } from '../stores/todo';
 	/** @type {import('./$types').PageData} */
 	export let data;
 
-	export let todo: TodoClass = new TodoClass(data?.todo?.title);
+	let todoInstance: TodoIntance;
+	todoInstance ??= Object.assign(new TodoIntance(), data.todo);
+	todo.set(todoInstance);
 </script>
 
 <div class="container mx-auto px-32 py-8">
-	<Todo {todo}></Todo>
+	<Todo></Todo>
 </div>

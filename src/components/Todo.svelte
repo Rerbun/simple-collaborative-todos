@@ -1,8 +1,7 @@
 <script lang="ts">
-	// @ts-ignore
 	import v8 from 'v8.js';
 	import { Todo } from '../interfaces/Todo';
-	export let todo: Todo = new Todo('');
+	import { addChild, todo } from '../stores/todo';
 
 	let newTodoValue = '';
 
@@ -19,22 +18,22 @@
 		todo.status = (event.target as HTMLInputElement).checked ? 'checked' : 'unchecked';
 	}
 
-	function viewTodo(todo: Todo) {
-		window.location.href = generateUrl(todo);
+	function viewTodo(todo?: Todo) {
+		todo && (window.location.href = generateUrl(todo));
 	}
 
 	function handleSubmit() {
-		todo.addChild(newTodoValue);
+		addChild(newTodoValue);
 		newTodoValue = '';
 	}
 </script>
 
 <div class="flex gap-2 flex-col">
 	<div class="flex gap-2 items-center">
-		{#if todo.parent}
+		{#if $todo.parent}
 			<button
 				name="open-parent"
-				on:click={() => todo.parent && viewTodo(todo.parent)}
+				on:click={() => $todo.parent && viewTodo($todo.parent)}
 				class="h-10 w-10 px-2 bg-white border border-gray hover:border-gray-400 rounded shadow leading-tight focus:outline-none focus:shadow-outline"
 				><svg
 					xmlns="http://www.w3.org/2000/svg"
@@ -52,12 +51,12 @@
 				</svg>
 			</button>
 		{/if}
-		{#if todo.title}
-			<h1 class="text-xl font-medium">{todo.title}</h1>
+		{#if $todo.title}
+			<h1 class="text-xl font-medium">{$todo.title}</h1>
 		{/if}
 		<button
 			name="share"
-			on:click={() => share(todo)}
+			on:click={() => share($todo)}
 			class="h-10 w-10 px-2 bg-white border border-gray hover:border-gray-400 rounded shadow leading-tight focus:outline-none focus:shadow-outline"
 			><svg
 				xmlns="http://www.w3.org/2000/svg"
@@ -76,7 +75,7 @@
 		</button>
 	</div>
 
-	{#each todo.children as child, index}
+	{#each $todo.children as child, index}
 		<div
 			class="flex gap-1 w-full pl-2 justify-between items-center border rounded hover:border-gray-400"
 		>
@@ -94,7 +93,6 @@
 				<button
 					name="view"
 					on:click={() => {
-						child.parent = todo;
 						viewTodo(child);
 					}}
 					class="h-10 w-10 px-2 bg-white border border-gray hover:border-gray-400 rounded shadow leading-tight focus:outline-none focus:shadow-outline"
