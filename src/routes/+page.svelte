@@ -4,7 +4,7 @@
 	/** @type {import('./$types').PageData} */
 	export let data;
 
-	export let todo: TodoClass = data.todo;
+	export let todo: TodoClass = new TodoClass(data?.todo?.title);
 </script>
 
 <div class="container mx-auto px-32 py-8">

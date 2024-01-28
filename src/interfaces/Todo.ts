@@ -15,6 +15,10 @@ export class Todo {
 		this.children.push(newTodo);
 	}
 
+	public static fromObject(todo: Record<string, any>) {
+		return Object.assign(new Todo(), todo);
+	}
+
 	// copy(todo: Todo) {
 	// 	const copy = new Todo();
 	// 	copy.id = todo.id;

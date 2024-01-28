@@ -1,7 +1,8 @@
 <script lang="ts">
+	// @ts-ignore
 	import v8 from 'v8.js';
 	import { Todo } from '../interfaces/Todo';
-	export let todo: Todo = new Todo();
+	export let todo: Todo = new Todo('');
 
 	let newTodoValue = '';
 
@@ -33,7 +34,7 @@
 		{#if todo.parent}
 			<button
 				name="open-parent"
-				on:click={() => viewTodo(todo.parent)}
+				on:click={() => todo.parent && viewTodo(todo.parent)}
 				class="h-10 w-10 px-2 bg-white border border-gray hover:border-gray-400 rounded shadow leading-tight focus:outline-none focus:shadow-outline"
 				><svg
 					xmlns="http://www.w3.org/2000/svg"
