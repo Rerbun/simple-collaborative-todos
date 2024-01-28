@@ -1,14 +1,30 @@
-import { action, atom, type WritableAtom } from 'nanostores';
+import { atom, computed, type ReadableAtom, type WritableAtom } from 'nanostores';
+import cycle from 'cycle';
 import { Todo } from '../interfaces/Todo';
 
-export const todo: WritableAtom<Todo> = atom(new Todo());
+export const serializeTodo = (todo: Todo) => {
+	return JSON.stringify(cycle.decycle(todo));
+};
 
-export const addChild = action(todo, 'addChild', (todoAtom, newChildTitle: string) => {
-	const newChild = new Todo(newChildTitle);
-	newChild.parent = todoAtom.get();
-	newChild.parent.children.push(newChild);
+export const deserializeTodo = (serializedTodo: string) => {
+	return cycle.retrocycle(JSON.parse(serializedTodo));
+};
 
-	todoAtom.set(newChild.parent);
+const serializedTodo: WritableAtom<string> = atom(serializeTodo(new Todo()));
 
-	return todoAtom.get();
-});
+export const todo: ReadableAtom = computed(serializedTodo, deserializeTodo);
+
+export const updateTodo = (todo: Todo) => {
+	serializedTodo.set(serializeTodo(todo));
+};
+
+// export const forceUpdateStore = action(
+// 	todo,
+// 	'forceUpdateStore',
+// 	(_, updatedTodo: Todo = todo.get()) => {
+// 		// Update reference to make sure re-renders are triggered on bindings
+// 		todo.set(updatedTodo.clone());
+
+// 		return todo.get();
+// 	}
+// );

@@ -1,11 +1,12 @@
 import { error, redirect } from '@sveltejs/kit';
+import { deserializeTodo } from '../stores/todo';
 /** @type {import('./$types').PageServerLoad} */
 export function load({ cookies }) {
 	let todo;
 	try {
 		let todoString = cookies.get('todo');
 		if (todoString) {
-			todo = JSON.parse(atob(decodeURIComponent(todoString)));
+			todo = deserializeTodo(atob(decodeURIComponent(todoString)));
 		}
 		console.log('Loaded todo: ', todo);
 	} catch (e) {

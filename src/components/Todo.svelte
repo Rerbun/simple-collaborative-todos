@@ -1,39 +1,45 @@
 <script lang="ts">
-	import v8 from 'v8.js';
+	import cycle from 'cycle';
 	import { Todo } from '../interfaces/Todo';
-	import { addChild, todo } from '../stores/todo';
+	import { todo as computedTodo, serializeTodo, updateTodo } from '../stores/todo';
 
-	let newTodoValue = '';
+	let todo: Todo;
+	computedTodo.subscribe((value) => (todo = value));
 
 	function generateUrl(todo: Todo) {
-		// @ts-ignore
-		return `${location.origin}/share/${encodeURIComponent(btoa(v8.serializer(todo)))}`;
+		return `${location.origin}/share/${encodeURIComponent(btoa(serializeTodo(todo)))}`;
 	}
 
 	function share(todo: Todo) {
 		window.navigator.clipboard.writeText(generateUrl(todo));
 	}
 
-	function handleCheck(event: Event, todo: Todo) {
-		todo.status = (event.target as HTMLInputElement).checked ? 'checked' : 'unchecked';
+	function handleCheck(event: Event, touchedTodo: Todo) {
+		touchedTodo.status = (event.target as HTMLInputElement).checked ? 'checked' : 'unchecked';
+		updateTodo(todo);
 	}
 
 	function viewTodo(todo?: Todo) {
 		todo && (window.location.href = generateUrl(todo));
 	}
 
-	function handleSubmit() {
-		addChild(newTodoValue);
-		newTodoValue = '';
+	function handleChildSubmit(event, parent: Todo = todo) {
+		const newTodo = new Todo((new FormData(event.target).get('new-todo') as string) ?? '');
+
+		newTodo.parent = parent;
+		parent.children.push(newTodo);
+		updateTodo(todo);
+
+		event.target.reset();
 	}
 </script>
 
 <div class="flex gap-2 flex-col">
 	<div class="flex gap-2 items-center">
-		{#if $todo.parent}
+		{#if todo.parent}
 			<button
 				name="open-parent"
-				on:click={() => $todo.parent && viewTodo($todo.parent)}
+				on:click={() => todo.parent && viewTodo(todo.parent)}
 				class="h-10 w-10 px-2 bg-white border border-gray hover:border-gray-400 rounded shadow leading-tight focus:outline-none focus:shadow-outline"
 				><svg
 					xmlns="http://www.w3.org/2000/svg"
@@ -51,12 +57,12 @@
 				</svg>
 			</button>
 		{/if}
-		{#if $todo.title}
-			<h1 class="text-xl font-medium">{$todo.title}</h1>
+		{#if todo.title}
+			<h1 class="text-xl font-medium">{todo.title}</h1>
 		{/if}
 		<button
 			name="share"
-			on:click={() => share($todo)}
+			on:click={() => share(todo)}
 			class="h-10 w-10 px-2 bg-white border border-gray hover:border-gray-400 rounded shadow leading-tight focus:outline-none focus:shadow-outline"
 			><svg
 				xmlns="http://www.w3.org/2000/svg"
@@ -75,7 +81,7 @@
 		</button>
 	</div>
 
-	{#each $todo.children as child, index}
+	{#each todo.children as child, index}
 		<div
 			class="flex gap-1 w-full pl-2 justify-between items-center border rounded hover:border-gray-400"
 		>
@@ -133,12 +139,10 @@
 			</div>
 		</div>
 	{/each}
-	<form on:submit|preventDefault={handleSubmit} class="flex gap-1">
+	<form on:submit|preventDefault={(event) => handleChildSubmit(event)} class="flex gap-1">
 		<input
 			type="text"
-			bind:value={newTodoValue}
 			name="new-todo"
-			id="new-todo"
 			placeholder="New to-do"
 			class="h-10 shadow appearance-none border border-gray hover:border-gray-400 rounded w-full py-2 px-2 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline"
 		/>
