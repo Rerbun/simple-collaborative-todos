@@ -1,8 +1,10 @@
 import { atom, computed, type ReadableAtom, type WritableAtom } from 'nanostores';
 import cycle from 'cycle';
 import { Todo } from '../interfaces/Todo';
+import { storeTodo } from '../utils/storage-utils';
 
 export const serializeTodo = (todo: Todo) => {
+	storeTodo(todo);
 	return JSON.stringify(cycle.decycle(todo));
 };
 
@@ -17,14 +19,3 @@ export const todo: ReadableAtom = computed(serializedTodo, deserializeTodo);
 export const updateTodo = (todo: Todo) => {
 	serializedTodo.set(serializeTodo(todo));
 };
-
-// export const forceUpdateStore = action(
-// 	todo,
-// 	'forceUpdateStore',
-// 	(_, updatedTodo: Todo = todo.get()) => {
-// 		// Update reference to make sure re-renders are triggered on bindings
-// 		todo.set(updatedTodo.clone());
-
-// 		return todo.get();
-// 	}
-// );

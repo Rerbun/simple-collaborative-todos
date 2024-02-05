@@ -1,5 +1,5 @@
 export class Todo {
-	public id?: string;
+	public id?: string = crypto.randomUUID();
 	public parent?: Todo;
 	public children: Todo[] = [];
 	public status: 'unchecked' | 'checked' | 'rejected' = 'unchecked';

@@ -4,6 +4,7 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
+		"start": "npm run dev",
 		"dev": "vite dev",
 		"build": "vite build",
 		"preview": "vite preview",
@@ -30,6 +31,7 @@
 	},
 	"dependencies": {
 		"cycle": "^1.0.3",
+		"esbuild": "^0.20.0",
 		"nanostores": "^0.9.5"
 	}
 }
