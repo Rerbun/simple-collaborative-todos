@@ -1,7 +1,7 @@
 {
 	"name": "simple-collaborative-todos",
 	"version": "0.0.1",
-	"private": true,
+	"license": "AGPL-3.0-or-later",
 	"type": "module",
 	"scripts": {
 		"start": "npm run dev",
@@ -14,7 +14,7 @@
 		"format": "prettier --write ."
 	},
 	"devDependencies": {
-		"@sveltejs/adapter-auto": "^3.0.0",
+		"@sveltejs/adapter-node": "^4.0.1",
 		"@sveltejs/kit": "^2.0.0",
 		"@sveltejs/vite-plugin-svelte": "^3.0.0",
 		"@types/node": "^20.11.9",

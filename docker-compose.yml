@@ -1,0 +1,12 @@
+services:
+  app:
+    container_name: 'simple-collaborative-todos'
+    build: .
+    ports:
+      - '3000:3000'
+    develop:
+      watch:
+        - action: rebuild
+          path: .
+          ignore:
+            - node_modules/

@@ -4,8 +4,6 @@ import { defineConfig } from 'vite';
 export default defineConfig({
 	plugins: [sveltekit()],
 	build: {
-		watch: {
-			// https://rollupjs.org/configuration-options/#watch
-		}
+		minify: false
 	}
 });
