@@ -13,6 +13,10 @@ const getStoredCycledTodos = (): Todo[] => {
 	);
 };
 
+export const getLastTodo = (): Todo | undefined => {
+	return getStoredCycledTodos().at(-1);
+};
+
 export const storeTodo = (todo: Todo) => {
 	storeAction(todo);
 	browser &&

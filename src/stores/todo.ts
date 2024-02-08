@@ -12,7 +12,7 @@ export const deserializeTodo = (serializedTodo: string) => {
 	return cycle.retrocycle(JSON.parse(serializedTodo));
 };
 
-const serializedTodo: WritableAtom<string> = atom(serializeTodo(new Todo()));
+const serializedTodo: WritableAtom<string> = atom();
 
 export const todo: ReadableAtom = computed(serializedTodo, deserializeTodo);
 

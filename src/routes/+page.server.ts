@@ -9,6 +9,7 @@ export function load({ cookies }) {
 			todo = deserializeTodo(atob(decodeURIComponent(todoString)));
 		}
 		console.log('Loaded todo: ', todo);
+		cookies.delete('todo', { path: '/' });
 	} catch (e) {
 		console.error(e);
 		error(400, { message: 'Incorrect URL' });
