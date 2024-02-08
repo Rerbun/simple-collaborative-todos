@@ -10,6 +10,6 @@
 	updateTodo(todoInstance);
 </script>
 
-<div class="container mx-auto px-32 py-8">
+<div class="container mx-auto px-2 py-2 md:px-32 md:py-8">
 	<Todo></Todo>
 </div>
