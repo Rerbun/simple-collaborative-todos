@@ -3,4 +3,4 @@ services:
     container_name: 'simple-collaborative-todos'
     build: .
     ports:
-      - '5300:3000'
+      - '3000:3000'
