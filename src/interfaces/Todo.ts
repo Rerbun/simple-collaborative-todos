@@ -12,4 +12,8 @@ export class Todo {
 	clone(): Todo {
 		return Object.assign(new Todo(), this);
 	}
+
+	static fromObject(object: Record<string, any>): Todo {
+		return Object.assign(new Todo(), object);
+	}
 }

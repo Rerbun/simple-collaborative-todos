@@ -15,7 +15,7 @@ I don't want changes/improvements for this project to be hidden away from the pu
 # Future improvements in no particular order
 
 - Ability to edit to-dos
-- Ability to remove to-dos
+- ~Ability to remove to-dos~
 - Create server-less static "mode" to host this in Github pages, but that still works with shared links
 - ~Keep to-dos in local storage~ and create a history page to show all to-dos in local storage
 - ~Create an archive button to "throw away" all to-dos currently in view and to start with a clean slate~
