@@ -1,31 +1,13 @@
 <script lang="ts">
 	import { Todo } from '../interfaces/Todo';
-	import { todo as computedTodo, serializeTodo, updateTodo } from '../stores/todo';
-	import { storeTodo } from '../utils/storage-utils';
+	import { updateTodo, viewTodo } from '../stores/todo';
+	import { share } from '../utils/navigation-utils';
 
-	let todo: Todo;
-	computedTodo.subscribe((value) => (todo = value));
-
-	function generateUrl(todo: Todo) {
-		return `${location.origin}/share/${encodeURIComponent(btoa(serializeTodo(todo)))}`;
-	}
-
-	function share(todo: Todo) {
-		window.navigator.clipboard.writeText(generateUrl(todo));
-	}
-
-	function archive(todo: Todo) {
-		storeTodo(todo);
-		viewTodo(new Todo());
-	}
+	export let todo: Todo;
 
 	function handleCheck(event: Event, touchedTodo: Todo) {
 		touchedTodo.status = (event.target as HTMLInputElement).checked ? 'checked' : 'unchecked';
 		updateTodo(todo);
-	}
-
-	function viewTodo(todo?: Todo) {
-		todo && (window.location.href = generateUrl(todo));
 	}
 
 	function handleChildSubmit(event, parent: Todo = todo) {
@@ -86,25 +68,6 @@
 					stroke-linecap="round"
 					stroke-linejoin="round"
 					d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244"
-				/>
-			</svg>
-		</button>
-		<button
-			name="archive"
-			on:click={() => archive(todo)}
-			class="h-10 w-10 px-2 bg-white border border-gray hover:border-gray-400 rounded shadow leading-tight focus:outline-none focus:shadow-outline"
-			><svg
-				xmlns="http://www.w3.org/2000/svg"
-				fill="none"
-				viewBox="0 0 24 24"
-				stroke-width="1.5"
-				stroke="gray"
-				class="w-6 h-6"
-			>
-				<path
-					stroke-linecap="round"
-					stroke-linejoin="round"
-					d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z"
 				/>
 			</svg>
 		</button>
