@@ -19,11 +19,25 @@ export const getLastTodo = (): Todo | undefined => {
 
 export const storeTodo = (todo: Todo) => {
 	storeAction(todo);
+	spliceArchice(todo);
+};
+
+export const removeFromArchive = (todo: Todo) => {
+	spliceArchice(todo, true);
+};
+
+const spliceArchice = (todo: Todo, remove = false) => {
 	let archivedTodos = getArchivedTodos();
+
 	const todoIndex = archivedTodos.findIndex(({ id }) => todo.id === id);
-	// Splice only adds to end if -array.length <= start < 0, so manually add it to the end of the array if index === -1
-	archivedTodos =
-		todoIndex > -1 ? archivedTodos.toSpliced(todoIndex, 1, todo) : [...archivedTodos, todo];
+	if (!remove) {
+		// Splice only adds to end if -array.length <= start < 0, so manually add it to the end of the array if index === -1
+		archivedTodos =
+			todoIndex > -1 ? archivedTodos.toSpliced(todoIndex, 1, todo) : [...archivedTodos, todo];
+	} else {
+		archivedTodos = archivedTodos.toSpliced(todoIndex, 1);
+	}
+
 	browser &&
 		localStorage?.setItem(ARCHIVED_TODOS_KEY, JSON.stringify(archivedTodos.map(cycle.decycle)));
 };
