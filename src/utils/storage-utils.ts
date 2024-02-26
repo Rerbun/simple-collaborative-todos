@@ -30,13 +30,11 @@ const spliceArchice = (todo: Todo, remove = false) => {
 	let archivedTodos = getArchivedTodos();
 
 	const todoIndex = archivedTodos.findIndex(({ id }) => todo.id === id);
-	if (!remove) {
-		// Splice only adds to end if -array.length <= start < 0, so manually add it to the end of the array if index === -1
-		archivedTodos =
-			todoIndex > -1 ? archivedTodos.toSpliced(todoIndex, 1, todo) : [...archivedTodos, todo];
-	} else {
-		archivedTodos = archivedTodos.toSpliced(todoIndex, 1);
-	}
+	// Splice only adds to end if -array.length <= start < 0, so manually add it to the end of the array if index === -1
+	archivedTodos =
+		todoIndex > -1
+			? archivedTodos.toSpliced(todoIndex, 1, ...(remove ? [] : [todo]))
+			: [...archivedTodos, todo];
 
 	browser &&
 		localStorage?.setItem(ARCHIVED_TODOS_KEY, JSON.stringify(archivedTodos.map(cycle.decycle)));
