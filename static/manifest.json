@@ -1,22 +1,22 @@
 {
-	"short_name": "Simple Todos",
-	"name": "simple-collaborative-todos",
-	"start_url": "/",
-	"theme_color": "#FFFFFF",
-	"background_color": "#FFFFFF",
-	"icons": [
-		{
-			"src": "favicon-dark.svg",
-			"type": "image/svg+xml",
-			"sizes": "48x48 72x72 96x96 128x128 256x256 512x512",
-			"purpose": "any"
-		},
-		{
-			"src": "favicon-dark.png",
-			"type": "image/png",
-			"sizes": "512x512",
-			"purpose": "any maskable"
-		}
-	],
-	"display": "standalone"
+  "short_name": "Simple Todos",
+  "name": "simple-collaborative-todos",
+  "start_url": "/",
+  "theme_color": "#FFFFFF",
+  "background_color": "#FFFFFF",
+  "icons": [
+    {
+      "src": "favicon-dark.svg",
+      "type": "image/svg+xml",
+      "sizes": "48x48 72x72 96x96 128x128 256x256 512x512",
+      "purpose": "any"
+    },
+    {
+      "src": "favicon-dark.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ],
+  "display": "standalone"
 }

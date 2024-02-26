@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { Todo } from '../interfaces/Todo';
-	import { todo as computedTodo, viewTodo } from '../stores/todo';
+  import { Todo } from '../interfaces/Todo';
+  import { todo as computedTodo, viewTodo } from '../stores/todo';
 
-	viewTodo(computedTodo.get() ?? new Todo());
+  viewTodo(computedTodo.get() ?? new Todo());
 </script>
