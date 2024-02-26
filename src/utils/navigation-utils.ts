@@ -6,5 +6,12 @@ export const generateUrl = (todo: Todo) => {
 };
 
 export const share = (todo: Todo) => {
-  window.navigator.clipboard.writeText(generateUrl(todo));
+  const url = generateUrl(todo);
+  const shareObject = {
+    title: 'Copy of my to-do list',
+    url,
+  };
+  navigator.canShare(shareObject)
+    ? navigator.share(shareObject)
+    : navigator.clipboard.writeText(url);
 };
