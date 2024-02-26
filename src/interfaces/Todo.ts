@@ -2,7 +2,7 @@ export class Todo {
 	public id?: string = crypto.randomUUID();
 	public parent?: Todo;
 	public children: Todo[] = [];
-	public status: 'unchecked' | 'checked' | 'rejected' = 'unchecked';
+	public status: 'unchecked' | 'checked' = 'unchecked';
 	public title: string = '';
 
 	constructor(title?: string) {
