@@ -2,7 +2,6 @@
   import { browser } from '$app/environment';
   import { Todo } from '../../../interfaces/Todo';
   import { updateTodo } from '../../../stores/todo';
-  import { getLastTodo } from '../../../utils/storage-utils';
 
   browser && history.replaceState(null, '', window.location.origin);
 
@@ -10,6 +9,6 @@
   export let data;
 
   let todo: Todo;
-  todo ??= Todo.fromObject(data.todo ?? getLastTodo());
+  todo ??= Todo.fromObject(data.todo ?? new Todo());
   todo && updateTodo(todo);
 </script>

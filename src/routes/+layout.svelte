@@ -5,7 +5,6 @@
   import { Todo as TodoClass } from '../interfaces/Todo';
   import { getArchivedTodos, removeFromArchive } from '../utils/storage-utils';
   import { todo as computedTodo, viewTodo } from '../stores/todo';
-  import { storeTodo } from '../utils/storage-utils';
   import StyledVectorGraphic from '../components/StyledVectorGraphic.svelte';
   import StyledButton from '../components/StyledButton.svelte';
 
@@ -25,11 +24,6 @@
     }
   });
 
-  const archive = (todo: TodoClass) => {
-    storeTodo(todo);
-    viewTodo(new TodoClass());
-  };
-
   const openPrevious = () => {
     nextTodos = [todoInstance, ...nextTodos];
     viewTodo(previousTodo);
@@ -39,6 +33,10 @@
     let nextTodo: TodoClass;
     [nextTodo, ...nextTodos] = nextTodos;
     viewTodo(nextTodo);
+  };
+
+  const openNew = () => {
+    viewTodo(new TodoClass());
   };
 
   const remove = (todo: TodoClass) => {
@@ -66,15 +64,6 @@
         {/if}
       </div>
       <div class="flex justify-center gap-1">
-        <StyledButton name="archive" on:click={() => archive(todoInstance)}
-          ><StyledVectorGraphic>
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="m20.25 7.5-.625 10.632a2.25 2.25 0 0 1-2.247 2.118H6.622a2.25 2.25 0 0 1-2.247-2.118L3.75 7.5M10 11.25h4M3.375 7.5h17.25c.621 0 1.125-.504 1.125-1.125v-1.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v1.5c0 .621.504 1.125 1.125 1.125Z"
-            />
-          </StyledVectorGraphic>
-        </StyledButton>
         <StyledButton name="remove" on:click={() => remove(todoInstance)}
           ><StyledVectorGraphic>
             <path
@@ -105,6 +94,12 @@
                 stroke-linejoin="round"
                 d="M17.25 8.25 21 12m0 0-3.75 3.75M21 12H3"
               />
+            </StyledVectorGraphic>
+          </StyledButton>
+        {:else}
+          <StyledButton name="next" on:click={openNew}
+            ><StyledVectorGraphic>
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
             </StyledVectorGraphic>
           </StyledButton>
         {/if}
