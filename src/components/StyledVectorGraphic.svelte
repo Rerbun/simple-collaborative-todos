@@ -3,7 +3,6 @@
   fill="none"
   viewBox="0 0 24 24"
   stroke-width="1.5"
-  stroke="gray"
-  class="w-6 h-6"
+  class="w-6 h-6 stroke-gray-500 dark:stroke-gray-300"
   {...$$props}><slot /></svg
 >

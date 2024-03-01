@@ -57,7 +57,7 @@
 
   {#each todo.children as child, index}
     <div
-      class="flex items-center justify-between w-full gap-1 pl-2 border rounded hover:border-gray-400"
+      class="flex items-center justify-between w-full gap-1 py-1 pl-2 pr-1 border rounded hover:border-gray-400 dark:border-gray-500 dark:hover:border-gray-400"
     >
       <div class="flex gap-2">
         <input
@@ -65,6 +65,7 @@
           name="checkbox-{index}"
           id="checkbox-{index}"
           checked={child.status === 'checked'}
+          class="dark:accent-gray-500 dark:bg-gray-500 dark:text-gray-500"
           on:change={(event) => handleCheck(event, child)}
         />
         <label for="checkbox-{index}">{child.title}</label>
@@ -120,7 +121,7 @@
       type="text"
       name="new-todo"
       placeholder="New to-do"
-      class="w-full h-10 px-2 py-2 mb-3 leading-tight text-gray-700 border rounded shadow appearance-none border-gray hover:border-gray-400 focus:outline-none focus:shadow-outline"
+      class="w-full h-10 px-2 py-2 mb-3 leading-tight text-gray-700 border rounded shadow appearance-none border-gray hover:border-gray-400 focus:outline-none focus:shadow-outline dark:bg-neutral-800 dark:border-neutral-500 dark:text-gray-200 dark:placeholder:text-gray-400"
     />
     <StyledButton type="submit" name="add-todo"
       ><StyledVectorGraphic>

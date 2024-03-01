@@ -1,16 +1,16 @@
 <script lang="ts">
   import '../app.css';
   import { page } from '$app/stores';
-  import Todo from '../components/Todo.svelte';
-  import { Todo as TodoClass } from '../interfaces/Todo';
+  import TodoList from '../components/TodoList.svelte';
+  import { Todo } from '../interfaces/Todo';
   import { getArchivedTodos, removeFromArchive } from '../utils/storage-utils';
   import { todo as computedTodo, viewTodo } from '../stores/todo';
   import StyledVectorGraphic from '../components/StyledVectorGraphic.svelte';
   import StyledButton from '../components/StyledButton.svelte';
 
-  let todoInstance: TodoClass;
-  let previousTodo: TodoClass;
-  let nextTodos: TodoClass[] = [];
+  let todoInstance: Todo;
+  let previousTodo: Todo;
+  let nextTodos: Todo[] = [];
 
   computedTodo.listen((value) => {
     todoInstance = value;
@@ -30,19 +30,19 @@
   };
 
   const openNext = () => {
-    let nextTodo: TodoClass;
+    let nextTodo: Todo;
     [nextTodo, ...nextTodos] = nextTodos;
     viewTodo(nextTodo);
   };
 
   const openNew = () => {
-    viewTodo(new TodoClass());
+    viewTodo(new Todo());
   };
 
-  const remove = (todo: TodoClass) => {
+  const remove = (todo: Todo) => {
     removeFromArchive(todo);
     const [nextTodo] = nextTodos;
-    viewTodo(previousTodo ?? nextTodo ?? new TodoClass());
+    viewTodo(previousTodo ?? nextTodo ?? new Todo());
   };
 </script>
 
@@ -106,6 +106,6 @@
       </div>
     </div>
     <hr class="my-4" />
-    <Todo todo={todoInstance ?? new TodoClass()}></Todo>
+    <TodoList todo={todoInstance ?? new Todo()}></TodoList>
   {/if}
 </div>

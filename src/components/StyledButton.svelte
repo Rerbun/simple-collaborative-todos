@@ -2,7 +2,7 @@
 <button
   on:click
   {...$$props}
-  class="w-10 h-10 px-2 leading-tight bg-white border rounded shadow border-gray hover:border-gray-400 focus:outline-none focus:shadow-outline"
+  class="w-10 h-10 px-2 leading-tight bg-white border rounded shadow border-gray hover:border-gray-400 focus:outline-none focus:shadow-outline dark:bg-neutral-700 dark:border-neutral-500"
 >
   <slot />
 </button>
