@@ -2,8 +2,8 @@
   "short_name": "Simple Todos",
   "name": "simple-collaborative-todos",
   "start_url": "/",
-  "theme_color": "#FFFFFF",
-  "background_color": "#FFFFFF",
+  "theme_color": "##262626",
+  "background_color": "##262626",
   "icons": [
     {
       "src": "favicon-dark.svg",
@@ -12,7 +12,7 @@
       "purpose": "any"
     },
     {
-      "src": "favicon-dark.png",
+      "src": "favicon.png",
       "type": "image/png",
       "sizes": "512x512",
       "purpose": "any maskable"
