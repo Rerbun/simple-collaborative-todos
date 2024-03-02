@@ -46,7 +46,7 @@
   };
 </script>
 
-<div class="container px-4 py-4 mx-auto md:px-32 md:py-8">
+<div class="container px-3 py-4 mx-auto md:px-32 md:py-8">
   <slot />
   {#if !$page.url.pathname.includes('/info')}
     <div class="grid w-full grid-cols-3">
