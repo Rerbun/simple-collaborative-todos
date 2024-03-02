@@ -59,13 +59,13 @@
     <div
       class="flex items-center justify-between w-full gap-1 py-1 pl-2 pr-1 border rounded hover:border-gray-400 dark:border-gray-500 dark:hover:border-gray-400"
     >
-      <div class="flex gap-2">
+      <div class="flex gap-2 items-center">
         <input
           type="checkbox"
           name="checkbox-{index}"
           id="checkbox-{index}"
           checked={child.status === 'checked'}
-          class="dark:accent-gray-500 dark:bg-gray-500 dark:text-gray-500"
+          class="focus:ring-transparent focus:ring-offset-0 leading-tight bg-white checked:bg-gray-400 focus:checked:bg-gray-400 border rounded shadow border-gray-200 hover:border-gray-400 focus:border-gray-400 focus:checked:border-gray-400 checked:border-gray-400 dark:bg-neutral-700 dark:border-neutral-500 dark:focus:border-neutral-500 dark:checked:text-neutral-700 dark:checked:bg-neutral-700 dark:checked:border-neutral-500 dark:focus:checked:bg-neutral-700 dark:focus:checked:border-neutral-500 size-8"
           on:change={(event) => handleCheck(event, child)}
         />
         <label for="checkbox-{index}">{child.title}</label>
@@ -121,7 +121,7 @@
       type="text"
       name="new-todo"
       placeholder="New to-do"
-      class="w-full h-10 px-2 py-2 mb-3 leading-tight text-gray-700 border rounded shadow appearance-none border-gray hover:border-gray-400 focus:outline-none focus:shadow-outline dark:bg-neutral-800 dark:border-neutral-500 dark:text-gray-200 dark:placeholder:text-gray-400"
+      class="w-full h-10 px-2 py-2 mb-3 focus:ring-transparent focus:ring-offset-0 leading-tight text-gray-700 border rounded shadow appearance-none border-gray-200 hover:border-gray-400 focus:border-gray-400 focus:outline-none focus:shadow-outline dark:bg-neutral-800 dark:border-neutral-500 dark:focus:border-neutral-500 dark:text-gray-200 dark:placeholder:text-gray-400"
     />
     <StyledButton type="submit" name="add-todo"
       ><StyledVectorGraphic>
