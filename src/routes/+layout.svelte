@@ -1,6 +1,7 @@
 <script lang="ts">
   import '../app.css';
   import { page } from '$app/stores';
+  import { fly } from 'svelte/transition';
   import TodoList from '../components/TodoList.svelte';
   import { Todo } from '../interfaces/Todo';
   import { getArchivedTodos, removeFromArchive } from '../utils/storage-utils';
@@ -11,17 +12,21 @@
   let todoInstance: Todo;
   let previousTodo: Todo;
   let nextTodos: Todo[] = [];
+  let flyDirection: 'left' | 'right';
+  let previousTodoIndex: number = Infinity;
 
   computedTodo.listen((value) => {
-    todoInstance = value;
     const archivedTodos = getArchivedTodos();
 
-    const currentIndex = archivedTodos.findIndex((todo) => todo.id === todoInstance.id);
+    const currentIndex = archivedTodos.findIndex((todo) => todo.id === value.id);
     if (currentIndex > -1) {
       previousTodo = archivedTodos[currentIndex - 1];
     } else {
       previousTodo = archivedTodos.at(-1);
     }
+    flyDirection = currentIndex > previousTodoIndex ? 'left' : 'right';
+    todoInstance = value;
+    previousTodoIndex = currentIndex;
   });
 
   const openPrevious = () => {
@@ -43,6 +48,14 @@
     removeFromArchive(todo);
     const [nextTodo] = nextTodos;
     viewTodo(previousTodo ?? nextTodo ?? new Todo());
+  };
+
+  const getFlyXValue = (inOut: 'in' | 'out') => {
+    if (inOut === 'in') {
+      return flyDirection === 'left' ? '-100vw' : '100vw';
+    } else {
+      return flyDirection === 'left' ? '100vw' : '-100vw';
+    }
   };
 </script>
 
@@ -106,6 +119,13 @@
       </div>
     </div>
     <hr class="my-4 bg-gray-500 dark:bg-gray-300" />
-    <TodoList todo={todoInstance ?? new Todo()}></TodoList>
+    {#key previousTodoIndex}
+      <div
+        in:fly={{ x: getFlyXValue('in'), duration: 2000, delay: 2001 }}
+        out:fly={{ x: getFlyXValue('out'), duration: 2000 }}
+      >
+        <TodoList todo={todoInstance ?? new Todo()}></TodoList>
+      </div>
+    {/key}
   {/if}
 </div>
