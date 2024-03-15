@@ -9,7 +9,7 @@ browser && localStorage.setItem(TODO_ACTION_HISTORY_KEY, '[]');
 
 export const getArchivedTodos = (): Todo[] => {
   return JSON.parse((browser && localStorage.getItem(ARCHIVED_TODOS_KEY)) || '[]').map(
-    cycle.retrocycle
+    (todo: Record<string, any>) => Todo.fromObject(cycle.retrocycle(todo))
   );
 };
 

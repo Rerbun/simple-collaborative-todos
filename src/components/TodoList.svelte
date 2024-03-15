@@ -13,9 +13,8 @@
   };
 
   const handleChildSubmit = (event, parent: Todo = todo) => {
-    const newTodo = new Todo((new FormData(event.target).get('new-todo') as string) ?? '');
+    const newTodo = new Todo((new FormData(event.target).get('new-todo') as string) ?? '', parent);
 
-    newTodo.parent = parent;
     parent.children.push(newTodo);
     updateTodo(todo);
 

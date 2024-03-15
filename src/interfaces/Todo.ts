@@ -1,12 +1,14 @@
 export class Todo {
-  public id?: string = crypto.randomUUID();
-  public parent?: Todo;
+  public readonly id: string;
+  public readonly parent?: Todo;
   public children: Todo[] = [];
   public status: 'unchecked' | 'checked' = 'unchecked';
   public title: string = '';
 
-  constructor(title?: string) {
+  constructor(title?: string, parent?: Todo) {
     this.title = title ?? this.title;
+    this.parent = parent;
+    this.id = parent?.id ?? crypto.randomUUID();
   }
 
   clone(): Todo {
