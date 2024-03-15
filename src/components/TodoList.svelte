@@ -6,6 +6,7 @@
   import StyledVectorGraphic from './StyledVectorGraphic.svelte';
 
   export let todo: Todo;
+  let editMode: boolean = false;
 
   const handleCheck = (event: Event, touchedTodo: Todo) => {
     touchedTodo.status = (event.target as HTMLInputElement).checked ? 'checked' : 'unchecked';
@@ -25,19 +26,47 @@
     todo.children.splice(index, 1);
     updateTodo(todo);
   };
+
+  const handleEditModeToggle = () => {
+    editMode && updateTodo(todo);
+    editMode = !editMode;
+  };
+
+  const sortTodo = (sortedTodo: Todo, direction: 'up' | 'down', currentIndex: number) => {
+    const modifier = direction === 'up' ? -1 : 1;
+    const swapIndex = currentIndex + modifier;
+    todo.children[currentIndex] = todo.children[swapIndex];
+    todo.children[swapIndex] = sortedTodo;
+    updateTodo(todo);
+  };
 </script>
 
 <div class="flex flex-col gap-2">
   <div class="flex items-center gap-2">
-    <StyledButton name="share" on:click={() => share(todo)}
+    <StyledButton name="share" on:click={handleEditModeToggle}
       ><StyledVectorGraphic>
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244"
-        />
+        {#if !editMode}
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125"
+          />
+        {:else}
+          <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+        {/if}
       </StyledVectorGraphic>
     </StyledButton>
+    {#if !editMode}
+      <StyledButton name="share" on:click={() => share(todo)}
+        ><StyledVectorGraphic>
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244"
+          />
+        </StyledVectorGraphic>
+      </StyledButton>
+    {/if}
     {#if todo.parent}
       <StyledButton name="open-parent" on:click={() => todo.parent && viewTodo(todo.parent)}
         ><StyledVectorGraphic>
@@ -59,46 +88,98 @@
       class="flex items-center justify-between w-full gap-1 py-1 pl-2 pr-1 border rounded hover:border-gray-400 dark:border-gray-500 dark:hover:border-gray-400"
     >
       <div class="flex items-center gap-2">
-        <input
-          type="checkbox"
-          name="checkbox-{index}"
-          id="checkbox-{index}"
-          checked={child.status === 'checked'}
-          class="leading-tight text-white bg-white border border-gray-200 rounded shadow focus:ring-transparent focus:ring-offset-0 checked:text-white checked:bg-white focus:checked:bg-white focus:checked:text-white hover:border-gray-400 focus:border-gray-400 focus:checked:border-gray-400 checked:border-gray-400 dark:bg-neutral-700 dark:border-neutral-500 dark:focus:border-neutral-500 dark:checked:text-neutral-700 dark:checked:bg-neutral-700 dark:checked:border-neutral-500 dark:focus:checked:bg-neutral-700 dark:focus:checked:border-neutral-500 size-8"
-          on:change={(event) => handleCheck(event, child)}
-        />
-        <label for="checkbox-{index}">{child.title}</label>
+        {#if !editMode}
+          <input
+            type="checkbox"
+            name="checkbox-{index}"
+            id="checkbox-{index}"
+            checked={child.status === 'checked'}
+            class="leading-tight text-white bg-white border border-gray-200 rounded shadow focus:ring-transparent focus:ring-offset-0 checked:text-white checked:bg-white focus:checked:bg-white focus:checked:text-white hover:border-gray-400 focus:border-gray-400 focus:checked:border-gray-400 checked:border-gray-400 dark:bg-neutral-700 dark:border-neutral-500 dark:focus:border-neutral-500 dark:checked:text-neutral-700 dark:checked:bg-neutral-700 dark:checked:border-neutral-500 dark:focus:checked:bg-neutral-700 dark:focus:checked:border-neutral-500 size-8"
+            on:change={(event) => handleCheck(event, child)}
+          />
+          <label for="checkbox-{index}">{child.title}</label>
+        {:else}
+          <StyledVectorGraphic
+            ><path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125"
+            /></StyledVectorGraphic
+          >
+          <div
+            contenteditable="true"
+            class="px-2 py-1 border border-gray-400 rounded dark:border-gray-500"
+            bind:textContent={child.title}
+          >
+            {child.title}
+          </div>
+        {/if}
       </div>
       <div class="flex gap-1">
-        <StyledButton
-          name="view"
-          on:click={() => {
-            viewTodo(child);
-          }}
-        >
-          {#if !child.children.length}
-            <StyledVectorGraphic>
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"
-              />
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
-              />
-            </StyledVectorGraphic>
-          {:else}
-            <span
-              >{child.children.reduce(
-                (numberOfCompleted, child) =>
-                  numberOfCompleted + Number(child.status !== 'unchecked'),
-                0
-              )}/{child.children.length}</span
+        {#if !editMode}
+          <StyledButton
+            name="view"
+            on:click={() => {
+              viewTodo(child);
+            }}
+          >
+            {#if !child.children.length}
+              <StyledVectorGraphic>
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"
+                />
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+                />
+              </StyledVectorGraphic>
+            {:else}
+              <span
+                >{child.children.reduce(
+                  (numberOfCompleted, child) =>
+                    numberOfCompleted + Number(child.status !== 'unchecked'),
+                  0
+                )}/{child.children.length}</span
+              >
+            {/if}
+          </StyledButton>
+        {:else}
+          {#if index !== 0}
+            <StyledButton
+              name="move-up"
+              on:click={() => {
+                sortTodo(child, 'up', index);
+              }}
             >
+              <StyledVectorGraphic>
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M8.25 6.75 12 3m0 0 3.75 3.75M12 3v18"
+                />
+              </StyledVectorGraphic>
+            </StyledButton>
           {/if}
-        </StyledButton>
+          {#if index !== todo.children.length - 1}
+            <StyledButton
+              name="move-down"
+              on:click={() => {
+                sortTodo(child, 'down', index);
+              }}
+            >
+              <StyledVectorGraphic>
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M19.5 13.5 12 21m0 0-7.5-7.5M12 21V3"
+                />
+              </StyledVectorGraphic>
+            </StyledButton>
+          {/if}
+        {/if}
         <StyledButton
           name="remove"
           on:click={() => {
@@ -115,17 +196,19 @@
       </div>
     </div>
   {/each}
-  <form on:submit|preventDefault={(event) => handleChildSubmit(event)} class="flex gap-1">
-    <input
-      type="text"
-      name="new-todo"
-      placeholder="New to-do"
-      class="w-full h-10 px-2 py-2 mb-3 leading-tight text-gray-700 border border-gray-200 rounded shadow appearance-none focus:ring-transparent focus:ring-offset-0 hover:border-gray-400 focus:border-gray-400 focus:outline-none focus:shadow-outline dark:bg-neutral-800 dark:border-neutral-500 dark:focus:border-neutral-500 dark:text-gray-200 dark:placeholder:text-gray-400"
-    />
-    <StyledButton type="submit" name="add-todo"
-      ><StyledVectorGraphic>
-        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-      </StyledVectorGraphic>
-    </StyledButton>
-  </form>
+  {#if !editMode}
+    <form on:submit|preventDefault={(event) => handleChildSubmit(event)} class="flex gap-1">
+      <input
+        type="text"
+        name="new-todo"
+        placeholder="New to-do"
+        class="w-full h-10 px-2 py-2 mb-3 leading-tight text-gray-700 border border-gray-200 rounded shadow appearance-none focus:ring-transparent focus:ring-offset-0 hover:border-gray-400 focus:border-gray-400 focus:outline-none focus:shadow-outline dark:bg-neutral-800 dark:border-neutral-500 dark:focus:border-neutral-500 dark:text-gray-200 dark:placeholder:text-gray-400"
+      />
+      <StyledButton type="submit" name="add-todo"
+        ><StyledVectorGraphic>
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+        </StyledVectorGraphic>
+      </StyledButton>
+    </form>
+  {/if}
 </div>
