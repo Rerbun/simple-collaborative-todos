@@ -6,7 +6,7 @@ export class Todo {
   public title: string = '';
 
   constructor(title?: string, parent?: Todo) {
-    this.title = title ?? this.title;
+    this.title = (title ?? this.title)?.trim();
     this.parent = parent;
     this.id = parent?.id ?? crypto.randomUUID();
   }
