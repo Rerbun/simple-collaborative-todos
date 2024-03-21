@@ -39,11 +39,18 @@
     todo.children[swapIndex] = sortedTodo;
     updateTodo(todo);
   };
+
+  const handleContentEditCompleted = (event: KeyboardEvent) => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      event.target.blur();
+    }
+  };
 </script>
 
 <div class="flex flex-col gap-2">
   <div class="flex items-center gap-2">
-    <StyledButton name="share" on:click={handleEditModeToggle}
+    <StyledButton name="edit" on:click={handleEditModeToggle}
       ><StyledVectorGraphic>
         {#if !editMode}
           <path
@@ -90,6 +97,7 @@
         contenteditable="true"
         class="px-2 py-1 border border-gray-400 rounded dark:border-gray-500 text-xl font-medium"
         bind:textContent={todo.title}
+        on:keydown={handleContentEditCompleted}
       >
         {todo.title}
       </h1>
@@ -125,6 +133,7 @@
             contenteditable="true"
             class="px-2 py-1 border border-gray-400 rounded dark:border-gray-500"
             bind:textContent={child.title}
+            on:keydown={handleContentEditCompleted}
           >
             {child.title}
           </div>
