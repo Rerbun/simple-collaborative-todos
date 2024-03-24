@@ -41,20 +41,21 @@ const getTodoById = async (id: string) => {
 };
 
 const saveAction = async (id: string, oldState: string, newState: string) => {
-  const changes = diff(JSON.parse(oldState), JSON.parse(newState), { outputNewOnly: true });
+  const changes: { [p: string]: { __old: any; __new: any } } = diff(
+    JSON.parse(oldState),
+    JSON.parse(newState),
+    { outputNewOnly: true }
+  );
   if (Object.keys(changes).length > 0) {
-    const property = Object.keys(changes)[0];
-    const oldValue = changes[property].__old;
-    const newValue = changes[property].__new;
-    return db
-      .insert(todoChanges)
-      .values({
+    const changeEntries: (typeof todoChanges.$inferInsert)[] = Object.entries(changes).map(
+      ([property, { __old, __new }]) => ({
         id,
         property,
-        oldValue,
-        newValue,
+        oldValue: __old,
+        newValue: __new,
       })
-      .returning();
+    );
+    return db.insert(todoChanges).values(changeEntries);
   }
 };
 
