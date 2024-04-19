@@ -20,7 +20,7 @@ I don't want changes/improvements for this project to be hidden away from the pu
 
 # How to develop
 
-- Install node.
+- Install Node and SQLite3.
 - Run `npm install`.
 - Run `npm start`.
 
