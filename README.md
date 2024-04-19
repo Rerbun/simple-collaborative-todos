@@ -12,6 +12,18 @@ Feel free to create PR's if you have a nice idea, but please keep this project s
 
 I don't want changes/improvements for this project to be hidden away from the public, so please keep your fork public too if you create any.
 
+# How to run as a Docker container
+
+- Install Docker.
+- Run `docker compose -f docker-compose.dev.yml up --build` (or `npm run docker:dev` if you have Node installed).
+- Go to http://localhost:3000.
+
+# How to develop
+
+- Install node.
+- Run `npm install`.
+- Run `npm start`.
+
 # Future improvements in no particular order
 
 - ~Ability to edit to-dos~
