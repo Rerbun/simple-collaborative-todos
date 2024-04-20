@@ -90,9 +90,9 @@ const saveAction = async (id: string, oldState: string, newState: string) => {
 //   }
 // };
 
-export const saveTodo = async (todo: Todo, parent?: Todo) => {
-  let { children, ...todoToSave } = parent ?? todo;
-  let entry = { ...todoToSave, parentId: todoToSave.parent?.id };
+export const saveTodo = async (todo: Todo, parentTodo?: Todo) => {
+  let { children, parent, ...todoToSave } = parentTodo ?? todo;
+  let entry = { ...todoToSave, parentId: parent?.id };
 
   await db.insert(todoTable).values(entry).onConflictDoUpdate({
     target: todoTable.id,
