@@ -15,11 +15,27 @@ const serializedTodo: WritableAtom<string> = atom();
 
 export const todo: ReadableAtom<Todo | undefined> = computed(serializedTodo, deserializeTodo);
 
-export const updateTodo = (todo: Todo) => {
+export const updateTodo = (todo: Todo, publishUpdate: boolean = true) => {
   storeTodo(todo);
   viewTodo(todo);
+  if (publishUpdate && todo.published) {
+    publishTodo(todo);
+  }
 };
 
 export const viewTodo = (todo: Todo) => {
   serializedTodo.set(serializeTodo(todo));
+};
+
+export const publishTodo = async (todo: Todo): Promise<string> => {
+  const id = await (
+    await fetch('/api/publish', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(cycle.decycle(todo)),
+    })
+  ).text();
+  return id;
 };

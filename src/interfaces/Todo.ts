@@ -4,6 +4,8 @@ export class Todo {
   public children: Todo[] = [];
   public status: 'unchecked' | 'checked' = 'unchecked';
   public title: string = '';
+  public published: boolean = false;
+
   public getApicalParent(): Todo {
     return this.parent?.getApicalParent() ?? this;
   }
