@@ -1,8 +1,9 @@
 <script lang="ts">
+  import { goto } from '$app/navigation';
   import cycle from 'cycle';
   import { Todo } from '../interfaces/Todo';
   import { updateTodo, viewTodo } from '../stores/todo';
-  import { share } from '../utils/navigation-utils';
+  import { share, shareCollaborateLink } from '../utils/navigation-utils';
   import StyledButton from './StyledButton.svelte';
   import StyledVectorGraphic from './StyledVectorGraphic.svelte';
 
@@ -48,14 +49,21 @@
     }
   };
 
-  const publish = (todo: Todo) => {
-    fetch('/api/publish', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(cycle.decycle(todo)),
-    });
+  const publish = async (todo: Todo) => {
+    const id = (
+      await fetch('/api/publish', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(cycle.decycle(todo)),
+      })
+    ).text();
+
+    if (id) {
+      // goto(`/collaborate/${id}`);
+      shareCollaborateLink(window.location.origin + `/collaborate/${id}`);
+    }
   };
 </script>
 

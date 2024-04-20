@@ -31,7 +31,7 @@ migrate(db, { migrationsFolder: 'migrations' });
 //   }, JSON.parse(initialState));
 // };
 
-const getTodoById = async (id: string) => {
+export const getTodoById = async (id: string) => {
   const todoEntry = Todo.fromObject(
     (await db.select().from(todoTable).where(eq(todoTable.id, id)))?.[0]
   );

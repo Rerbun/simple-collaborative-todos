@@ -15,3 +15,13 @@ export const share = (todo: Todo) => {
     ? navigator.share(shareObject)
     : navigator.clipboard.writeText(url);
 };
+
+export const shareCollaborateLink = (url: string) => {
+  const shareObject = {
+    title: 'Collaborate on my to-do list',
+    url,
+  };
+  navigator.canShare(shareObject)
+    ? navigator.share(shareObject)
+    : navigator.clipboard.writeText(url);
+};

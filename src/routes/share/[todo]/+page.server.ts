@@ -1,4 +1,4 @@
-import { error, redirect } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import { deserializeTodo } from '../../../stores/todo';
 /** @type {import('./$types').PageServerLoad} */
 
