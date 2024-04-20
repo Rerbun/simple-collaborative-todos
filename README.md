@@ -6,7 +6,7 @@ The goal of this project is to create a simple website where you can keep your o
 
 **No authentication/log-in required!**
 
-Nothing will be stored on the server, everything will be stored in the shared link.
+Normally nothing will be stored on the server, everything will be stored in your browser or your shared link. Only when clicking the globe it will store the to-do online also.
 
 Feel free to create PR's if you have a nice idea, but please keep this project simple.
 
