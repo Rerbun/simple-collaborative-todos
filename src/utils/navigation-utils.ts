@@ -5,7 +5,8 @@ export const generateUrl = (todo: Todo) => {
   return `${location.origin}/share/${encodeURIComponent(btoa(serializeTodo(todo)))}`;
 };
 
-export const share = (todo: Todo) => {
+export const shareLink = (todo: Todo) => {
+  if (todo.published) return shareCollaborateLink(todo.id);
   const url = generateUrl(todo);
   const shareObject = {
     title: 'Copy of my to-do list',
@@ -16,7 +17,8 @@ export const share = (todo: Todo) => {
     : navigator.clipboard.writeText(url);
 };
 
-export const shareCollaborateLink = (url: string) => {
+export const shareCollaborateLink = (todoId: string) => {
+  const url = `${window.location.origin}/collaborate/${todoId}`;
   const shareObject = {
     title: 'Collaborate on my to-do list',
     url,

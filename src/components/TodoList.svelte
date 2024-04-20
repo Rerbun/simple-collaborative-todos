@@ -2,11 +2,11 @@
   import cycle from 'cycle';
   import { Todo } from '../interfaces/Todo';
   import { publishTodo, updateTodo, viewTodo } from '../stores/todo';
-  import { share, shareCollaborateLink } from '../utils/navigation-utils';
+  import { shareLink, shareCollaborateLink } from '../utils/navigation-utils';
   import StyledButton from './StyledButton.svelte';
   import StyledVectorGraphic from './StyledVectorGraphic.svelte';
 
-  export let todo: Todo;
+  export let todo: Record<string, any>;
   let editMode: boolean = false;
 
   const handleCheck = (event: Event, touchedTodo: Record<string, any>) => {
@@ -29,11 +29,11 @@
 
   const handleChildRemoveByIndex = (index: number) => {
     todo.children.splice(index, 1);
-    updateTodo(todo);
+    updateTodo(Todo.fromObject(todo));
   };
 
   const handleEditModeToggle = () => {
-    editMode && updateTodo(todo);
+    editMode && updateTodo(Todo.fromObject(todo));
     editMode = !editMode;
   };
 
@@ -42,7 +42,7 @@
     const swapIndex = currentIndex + modifier;
     todo.children[currentIndex] = todo.children[swapIndex];
     todo.children[swapIndex] = sortedTodo;
-    updateTodo(todo);
+    updateTodo(Todo.fromObject(todo));
   };
 
   const handleContentEditCompleted = (event: KeyboardEvent) => {
@@ -57,11 +57,8 @@
     const id = await publishTodo(todo);
 
     if (id) {
-      todoObject.published = true;
+      todo.published = true;
       updateTodo(todo, false);
-      const shareLink = window.location.origin + `/collaborate/${id}`;
-      console.log('Sharing link:', shareLink);
-      shareCollaborateLink(shareLink);
     }
   };
 </script>
@@ -82,7 +79,7 @@
       </StyledVectorGraphic>
     </StyledButton>
     {#if !editMode}
-      <StyledButton name="share" on:click={() => share(todo)}
+      <StyledButton name="share" on:click={() => shareLink(Todo.fromObject(todo))}
         ><StyledVectorGraphic>
           <path
             stroke-linecap="round"
@@ -92,7 +89,7 @@
         </StyledVectorGraphic>
       </StyledButton>
       {#if !todo.published}
-        <StyledButton name="publish" on:click={() => publish(todo)}
+        <StyledButton name="publish" on:click={() => publish(Todo.fromObject(todo))}
           ><StyledVectorGraphic>
             <path
               stroke-linecap="round"

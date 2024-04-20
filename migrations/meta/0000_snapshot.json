@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "sqlite",
-  "id": "496c6f86-d492-4f47-93e5-84fccc8e9495",
+  "id": "4277277a-059c-48b2-b51a-c0fc379bef83",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "todo_changes": {
@@ -105,7 +105,7 @@
           "tableTo": "todos",
           "columnsFrom": ["parentId"],
           "columnsTo": ["id"],
-          "onDelete": "no action",
+          "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },

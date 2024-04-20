@@ -12,7 +12,7 @@ CREATE TABLE `todos` (
 	`parentId` text,
 	`status` text NOT NULL,
 	`title` text,
-	FOREIGN KEY (`parentId`) REFERENCES `todos`(`id`) ON UPDATE no action ON DELETE no action
+	FOREIGN KEY (`parentId`) REFERENCES `todos`(`id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint
 CREATE UNIQUE INDEX `todos_id_unique` ON `todos` (`id`);

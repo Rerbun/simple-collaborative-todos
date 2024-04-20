@@ -8,5 +8,8 @@
 
   let todo: Todo;
   todo ??= Todo.fromObject(data ?? new Todo());
-  todo && updateTodo(todo);
+  if (todo) {
+    todo.published = true;
+    updateTodo(todo, false);
+  }
 </script>

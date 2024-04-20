@@ -2,8 +2,9 @@ import path from 'path';
 import { drizzle } from 'drizzle-orm/better-sqlite3';
 import { migrate } from 'drizzle-orm/better-sqlite3/migrator';
 import Database from 'better-sqlite3';
-import { eq } from 'drizzle-orm';
+import { eq, inArray } from 'drizzle-orm';
 import { diff } from 'json-diff';
+import { pick } from 'lodash-es';
 import { Todo } from '../interfaces/Todo';
 import { todoTable, todChangesTable } from '../db/schema.server';
 
@@ -91,8 +92,11 @@ const getChildTodos = async (parent: Todo) => {
 // };
 
 export const saveTodo = async (todo: Todo) => {
-  let { children, parent, ...cleanTodo } = todo;
-  let entry = { ...cleanTodo, parentId: parent?.id };
+  let { children, parent } = todo;
+  let entry: typeof todoTable.$inferInsert = {
+    ...pick(todo, Object.keys(todoTable)),
+    parentId: parent?.id,
+  };
 
   const result = await db
     .insert(todoTable)
@@ -105,7 +109,27 @@ export const saveTodo = async (todo: Todo) => {
   console.log(result);
   if (result.length === 0) throw new Error(`Failed to save todo ${entry.id}: "${entry.title}"`);
 
+  await syncDeletedChildren(entry.id, children);
+
   if (children.length > 0) {
-    await Promise.all(children.map((child) => saveTodo(child)));
+    const childPromises = children.map((child) => saveTodo(child));
+    await Promise.all(childPromises);
+  }
+};
+
+const syncDeletedChildren = async (parentId: string, children: Todo[]) => {
+  const currentChildren = await db.select().from(todoTable).where(eq(todoTable.parentId, parentId));
+
+  const childrenToDelete = currentChildren.filter(
+    (child) => !children.some((newChild) => newChild.id === child.id)
+  );
+
+  if (childrenToDelete.length > 0) {
+    await db.delete(todoTable).where(
+      inArray(
+        todoTable.id,
+        childrenToDelete.map(({ id }) => id)
+      )
+    );
   }
 };
