@@ -23,7 +23,7 @@ export const shareCollaborateLink = (todoId: string) => {
     title: 'Collaborate on my to-do list',
     url,
   };
-  navigator.canShare(shareObject)
+  process.env.NODE_ENV === 'production' && navigator.canShare(shareObject)
     ? navigator.share(shareObject)
     : navigator.clipboard.writeText(url);
 };

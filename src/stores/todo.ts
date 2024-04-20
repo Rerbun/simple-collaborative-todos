@@ -1,3 +1,4 @@
+import { browser } from '$app/environment';
 import { atom, computed, type ReadableAtom, type WritableAtom } from 'nanostores';
 import cycle from 'cycle';
 import { Todo } from '../interfaces/Todo';
@@ -25,6 +26,7 @@ export const updateTodo = (todo: Todo, publishUpdate: boolean = true) => {
 
 export const viewTodo = (todo: Todo) => {
   serializedTodo.set(serializeTodo(todo));
+  browser && window.history.replaceState(null, '', window.location.origin);
 };
 
 export const publishTodo = async (todo: Todo): Promise<string> => {

@@ -19,6 +19,7 @@
     const currentIndex = archivedTodos.findIndex((todo) => todo.id === todoInstance.id);
     if (currentIndex > -1) {
       previousTodo = archivedTodos[currentIndex - 1];
+      nextTodos = archivedTodos.slice(currentIndex + 1);
     } else {
       previousTodo = archivedTodos.at(-1);
     }
