@@ -90,16 +90,22 @@ const saveAction = async (id: string, oldState: string, newState: string) => {
 //   }
 // };
 
-export const saveTodo = async (todo: Todo, parentTodo?: Todo) => {
-  let { children, parent, ...todoToSave } = parentTodo ?? todo;
-  let entry = { ...todoToSave, parentId: parent?.id };
+export const saveTodo = async (todo: Todo) => {
+  let { children, parent, ...cleanTodo } = todo;
+  let entry = { ...cleanTodo, parentId: parent?.id };
 
-  await db.insert(todoTable).values(entry).onConflictDoUpdate({
-    target: todoTable.id,
-    set: entry,
-  });
+  const result = await db
+    .insert(todoTable)
+    .values(entry)
+    .onConflictDoUpdate({
+      target: todoTable.id,
+      set: entry,
+    })
+    .returning();
+  console.log(result);
+  if (result.length === 0) throw new Error(`Failed to save todo ${entry.id}:${entry.title}`);
 
   if (children.length > 0) {
-    await Promise.all(children.map((child) => saveTodo(child, todo)));
+    await Promise.all(children.map((child) => saveTodo(child)));
   }
 };
