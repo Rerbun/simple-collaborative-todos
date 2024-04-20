@@ -10,16 +10,20 @@
   export let todo: Todo;
   let editMode: boolean = false;
 
-  const handleCheck = (event: Event, touchedTodo: Todo) => {
+  const handleCheck = (event: Event, touchedTodo: Record<string, any>) => {
     touchedTodo.status = (event.target as HTMLInputElement).checked ? 'checked' : 'unchecked';
-    updateTodo(todo);
+    updateTodo(Todo.fromObject(todo));
   };
 
-  const handleChildSubmit = (event, parent: Todo = todo) => {
-    const newTodo = new Todo((new FormData(event.target).get('new-todo') as string) ?? '', parent);
+  const handleChildSubmit = (event, parent: Record<string, any> = todo) => {
+    const parentTodo = Todo.fromObject(parent);
+    const newTodo = new Todo(
+      (new FormData(event.target).get('new-todo') as string) ?? '',
+      parentTodo
+    );
 
-    parent.children.push(newTodo);
-    updateTodo(todo);
+    parentTodo.children.push(newTodo);
+    updateTodo(parentTodo);
 
     event.target.reset();
   };
@@ -49,8 +53,8 @@
     }
   };
 
-  const publish = async (todo: Todo) => {
-    const id = (
+  const publish = async (todo: Record<string, any>) => {
+    const id = await (
       await fetch('/api/publish', {
         method: 'POST',
         headers: {
@@ -62,7 +66,9 @@
 
     if (id) {
       // goto(`/collaborate/${id}`);
-      shareCollaborateLink(window.location.origin + `/collaborate/${id}`);
+      const shareLink = window.location.origin + `/collaborate/${id}`;
+      console.log('Sharing link:', shareLink);
+      shareCollaborateLink(shareLink);
     }
   };
 </script>

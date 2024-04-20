@@ -8,8 +8,11 @@ CREATE TABLE `todo_changes` (
 );
 --> statement-breakpoint
 CREATE TABLE `todos` (
-	`id` text,
+	`id` text PRIMARY KEY NOT NULL,
+	`parentId` text,
 	`status` text NOT NULL,
 	`title` text,
-	FOREIGN KEY (`id`) REFERENCES `todos`(`id`) ON UPDATE no action ON DELETE no action
+	FOREIGN KEY (`parentId`) REFERENCES `todos`(`id`) ON UPDATE no action ON DELETE no action
 );
+--> statement-breakpoint
+CREATE UNIQUE INDEX `todos_id_unique` ON `todos` (`id`);

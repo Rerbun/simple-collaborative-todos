@@ -45,7 +45,7 @@ const getChildTodos = async (parent: Todo) => {
   let output: Todo[] = [];
   const childEntries = await db.select().from(todoTable).where(eq(todoTable.parentId, parent.id));
   if (childEntries.length === 0) return output;
-  Promise.all(
+  await Promise.all(
     childEntries.map(async (child) => {
       const todoChild = Todo.fromObject({ parent, ...child });
       todoChild.children = await getChildTodos(todoChild);
@@ -56,24 +56,24 @@ const getChildTodos = async (parent: Todo) => {
   return output;
 };
 
-const saveAction = async (id: string, oldState: string, newState: string) => {
-  const changes: { [p: string]: { __old: any; __new: any } } = diff(
-    JSON.parse(oldState),
-    JSON.parse(newState),
-    { outputNewOnly: true }
-  );
-  if (Object.keys(changes).length > 0) {
-    const changeEntries: (typeof todChangesTable.$inferInsert)[] = Object.entries(changes).map(
-      ([property, { __old, __new }]) => ({
-        id,
-        property,
-        oldValue: __old,
-        newValue: __new,
-      })
-    );
-    return db.insert(todChangesTable).values(changeEntries);
-  }
-};
+// const saveAction = async (id: string, oldState: string, newState: string) => {
+//   const changes: { [p: string]: { __old: any; __new: any } } = diff(
+//     JSON.parse(oldState),
+//     JSON.parse(newState),
+//     { outputNewOnly: true }
+//   );
+//   if (Object.keys(changes).length > 0) {
+//     const changeEntries: (typeof todChangesTable.$inferInsert)[] = Object.entries(changes).map(
+//       ([property, { __old, __new }]) => ({
+//         id,
+//         property,
+//         oldValue: __old,
+//         newValue: __new,
+//       })
+//     );
+//     return db.insert(todChangesTable).values(changeEntries);
+//   }
+// };
 
 // const saveTodo = async (id: string, state: string) => {
 //   const todo =
@@ -103,7 +103,7 @@ export const saveTodo = async (todo: Todo) => {
     })
     .returning();
   console.log(result);
-  if (result.length === 0) throw new Error(`Failed to save todo ${entry.id}:${entry.title}`);
+  if (result.length === 0) throw new Error(`Failed to save todo ${entry.id}: "${entry.title}"`);
 
   if (children.length > 0) {
     await Promise.all(children.map((child) => saveTodo(child)));

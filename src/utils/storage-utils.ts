@@ -18,12 +18,13 @@ export const getLastTodo = (): Todo | undefined => {
 };
 
 export const storeTodo = (todo: Todo) => {
-  storeAction(todo);
-  spliceArchice(todo);
+  const apicalParent = todo.getApicalParent();
+  storeAction(apicalParent);
+  spliceArchice(apicalParent);
 };
 
 export const removeFromArchive = (todo: Todo) => {
-  spliceArchice(todo, true);
+  spliceArchice(todo.getApicalParent(), true);
 };
 
 const spliceArchice = (todo: Todo, remove = false) => {

@@ -3,7 +3,7 @@ import { text, sqliteTable, type AnySQLiteColumn } from 'drizzle-orm/sqlite-core
 
 export const todoTable = sqliteTable('todos', {
   id: text('id').primaryKey().unique().notNull(),
-  parentId: text('id').references((): AnySQLiteColumn => todoTable.id),
+  parentId: text('parentId').references((): AnySQLiteColumn => todoTable.id),
   status: text('status').notNull(),
   title: text('title'),
 });

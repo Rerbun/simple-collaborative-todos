@@ -4,11 +4,14 @@ export class Todo {
   public children: Todo[] = [];
   public status: 'unchecked' | 'checked' = 'unchecked';
   public title: string = '';
+  public getApicalParent(): Todo {
+    return this.parent?.getApicalParent() ?? this;
+  }
 
   constructor(title?: string, parent?: Todo) {
     this.title = (title ?? this.title)?.trim();
     this.parent = parent;
-    this.id = parent?.id ?? crypto.randomUUID();
+    this.id = crypto.randomUUID();
   }
 
   clone(): Todo {
