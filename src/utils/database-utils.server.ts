@@ -39,18 +39,23 @@ export const getTodoById = async (id: string) => {
 
   if (!todoEntry) return null;
   todoEntry.children = await getChildTodos(todoEntry);
+  console.log('Got: ', todoEntry);
   return Todo.fromObject(todoEntry);
 };
 
 const getChildTodos = async (parent: Todo | Record<string, any>) => {
   let output: Record<string, any>[] = [];
-  const childEntries = await db.select().from(todoTable).where(eq(todoTable.parentId, parent.id));
+  const childEntries = await db
+    .select()
+    .from(todoTable)
+    .where(eq(todoTable.parentId, parent.id))
+    .orderBy(todoTable.index);
   if (childEntries.length === 0) return output;
   await Promise.all(
-    childEntries.map(async (child) => {
+    childEntries.map(async (child, index) => {
       const todoChild: Record<string, any> = { parent, ...child };
       todoChild.children = await getChildTodos(todoChild);
-      output.push(todoChild);
+      output[index] = todoChild;
     })
   );
 
@@ -98,7 +103,7 @@ export const saveTodo = async (todo: Todo, index: number = null) => {
     parentId: parent?.id,
     index,
   };
-
+  console.log('Saving: ', entry);
   const result = await db
     .insert(todoTable)
     .values(entry)
@@ -107,13 +112,16 @@ export const saveTodo = async (todo: Todo, index: number = null) => {
       set: entry,
     })
     .returning();
-  console.log(result);
+  console.log('Saved: ', result);
   if (result.length === 0) throw new Error(`Failed to save todo ${entry.id}: "${entry.title}"`);
 
   await syncDeletedChildren(entry.id, children);
 
   if (children.length > 0) {
-    const childPromises = children.map((child, index) => saveTodo(child, index));
+    const childPromises = children.map((child, index) => {
+      console.log('Index: ', index);
+      saveTodo(child, index);
+    });
     await Promise.all(childPromises);
   }
 };

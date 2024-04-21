@@ -50,7 +50,8 @@ export class Todo {
     return Object.assign(new Todo(), this);
   }
 
-  findDescendentById(id: string): Todo {
+  // TODO: Rename descendent to descendant
+  public findDescendentById(id: string): Todo {
     if (this.id === id) return this;
     for (const child of this.children) {
       const found = child.findDescendentById(id);

@@ -45,8 +45,9 @@ source('/api/events')
 
 export const updateTodo = async (todo: Todo, publishUpdate: boolean = true) => {
   storeTodo(todo);
-  if (publishUpdate && todo.publishId) {
-    await publishTodo(todo);
+  if (publishUpdate && todo.publishId && todo.isInstance) {
+    console.log('Upserting: ', todo);
+    await publishTodo(todo.getApicalParent() as Todo);
   }
   console.log('Updated todo: ', todo);
   viewTodo(todo);
@@ -74,6 +75,7 @@ const getInstancedTodo = (id: string): Todo => {
 
 export const publishTodo = async (todo: Todo): Promise<string> => {
   if (!browser) return;
+  console.log('Publishing: ', todo);
   const id = await (
     await fetch('/api/todo', {
       method: 'POST',
