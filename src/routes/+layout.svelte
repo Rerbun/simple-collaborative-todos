@@ -4,7 +4,7 @@
   import TodoList from '../components/TodoList.svelte';
   import { Todo } from '../interfaces/Todo';
   import { getArchivedTodos, removeFromArchive } from '../utils/storage-utils';
-  import { todo as computedTodo, viewTodo } from '../stores/todo';
+  import { todo as computedTodo, updateTodo, viewTodo } from '../stores/todo';
   import StyledVectorGraphic from '../components/StyledVectorGraphic.svelte';
   import StyledButton from '../components/StyledButton.svelte';
 
