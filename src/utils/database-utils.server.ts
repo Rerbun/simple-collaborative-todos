@@ -2,7 +2,7 @@ import path from 'path';
 import { drizzle } from 'drizzle-orm/better-sqlite3';
 import { migrate } from 'drizzle-orm/better-sqlite3/migrator';
 import Database from 'better-sqlite3';
-import { eq, inArray } from 'drizzle-orm';
+import { eq, desc, inArray } from 'drizzle-orm';
 import { diff } from 'json-diff';
 import { pick } from 'lodash-es';
 import { Todo } from '../interfaces/Todo';
@@ -33,22 +33,22 @@ migrate(db, { migrationsFolder: 'migrations' });
 // };
 
 export const getTodoById = async (id: string) => {
-  const todoEntry = Todo.fromObject(
-    (await db.select().from(todoTable).where(eq(todoTable.id, id)))?.[0]
-  );
+  const todoEntry: Record<string, any> = (
+    await db.select().from(todoTable).where(eq(todoTable.id, id))
+  )?.[0];
+
   if (!todoEntry) return null;
-  const todo = Todo.fromObject(todoEntry);
-  todo.children = await getChildTodos(todo);
-  return todo;
+  todoEntry.children = await getChildTodos(todoEntry);
+  return Todo.fromObject(todoEntry);
 };
 
-const getChildTodos = async (parent: Todo) => {
-  let output: Todo[] = [];
+const getChildTodos = async (parent: Todo | Record<string, any>) => {
+  let output: Record<string, any>[] = [];
   const childEntries = await db.select().from(todoTable).where(eq(todoTable.parentId, parent.id));
   if (childEntries.length === 0) return output;
   await Promise.all(
     childEntries.map(async (child) => {
-      const todoChild = Todo.fromObject({ parent, ...child });
+      const todoChild: Record<string, any> = { parent, ...child };
       todoChild.children = await getChildTodos(todoChild);
       output.push(todoChild);
     })
@@ -91,11 +91,12 @@ const getChildTodos = async (parent: Todo) => {
 //   }
 // };
 
-export const saveTodo = async (todo: Todo) => {
+export const saveTodo = async (todo: Todo, index: number = null) => {
   let { children, parent } = todo;
   let entry: typeof todoTable.$inferInsert = {
     ...pick(todo, Object.keys(todoTable)),
     parentId: parent?.id,
+    index,
   };
 
   const result = await db
@@ -112,13 +113,17 @@ export const saveTodo = async (todo: Todo) => {
   await syncDeletedChildren(entry.id, children);
 
   if (children.length > 0) {
-    const childPromises = children.map((child) => saveTodo(child));
+    const childPromises = children.map((child, index) => saveTodo(child, index));
     await Promise.all(childPromises);
   }
 };
 
 const syncDeletedChildren = async (parentId: string, children: Todo[]) => {
-  const currentChildren = await db.select().from(todoTable).where(eq(todoTable.parentId, parentId));
+  const currentChildren = await db
+    .select()
+    .from(todoTable)
+    .where(eq(todoTable.parentId, parentId))
+    .orderBy(desc(todoTable.index));
 
   const childrenToDelete = currentChildren.filter(
     (child) => !children.some((newChild) => newChild.id === child.id)

@@ -6,7 +6,7 @@ export const generateUrl = (todo: Todo) => {
 };
 
 export const shareLink = (todo: Todo) => {
-  if (todo.published) return shareCollaborateLink(todo.id);
+  if (todo.publishId) return shareCollaborateLink(todo.id);
   const url = generateUrl(todo);
   const shareObject = {
     title: 'Copy of my to-do list',

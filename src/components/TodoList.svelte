@@ -1,13 +1,17 @@
 <script lang="ts">
   import cycle from 'cycle';
   import { Todo } from '../interfaces/Todo';
-  import { publishTodo, updateTodo, viewTodo } from '../stores/todo';
+  import { todoAtom as computedTodo, publishTodo, updateTodo, viewTodo } from '../stores/todo';
   import { shareLink, shareCollaborateLink } from '../utils/navigation-utils';
   import StyledButton from './StyledButton.svelte';
   import StyledVectorGraphic from './StyledVectorGraphic.svelte';
 
-  export let todo: Record<string, any>;
+  export let todo: Todo = new Todo();
   let editMode: boolean = false;
+
+  computedTodo.listen((value) => {
+    todo = Todo.fromObject(value);
+  });
 
   const handleCheck = (event: Event, touchedTodo: Record<string, any>) => {
     touchedTodo.status = (event.target as HTMLInputElement).checked ? 'checked' : 'unchecked';
@@ -20,8 +24,10 @@
       (new FormData(event.target).get('new-todo') as string) ?? '',
       parentTodo
     );
+    if (parentTodo.publishId) newTodo.publishId = parentTodo.publishId;
 
     parentTodo.children.push(newTodo);
+    console.log(parentTodo.children[0].publishId);
     updateTodo(parentTodo);
 
     event.target.reset();
@@ -52,12 +58,20 @@
     }
   };
 
+  const handleViewTodo = (todoObject: Record<string, any>) => {
+    if (todoObject.parent && todoObject.parent?.id === todo.id) {
+      todoObject.parent = todo;
+    }
+    viewTodo(todoObject);
+  };
+
   const publish = async (todoObject: Record<string, any>) => {
     const todo = Todo.fromObject(todoObject);
     const id = await publishTodo(todo);
 
     if (id) {
-      todo.published = true;
+      todo.publishId = id;
+      console.log('Published:', todo.publishId);
       updateTodo(todo, false);
     }
   };
@@ -88,7 +102,7 @@
           />
         </StyledVectorGraphic>
       </StyledButton>
-      {#if !todo.published}
+      {#if !todo.publishId}
         <StyledButton name="publish" on:click={() => publish(Todo.fromObject(todo))}
           ><StyledVectorGraphic>
             <path
@@ -109,7 +123,7 @@
       {/if}
     {/if}
     {#if todo.parent}
-      <StyledButton name="open-parent" on:click={() => todo.parent && viewTodo(todo.parent)}
+      <StyledButton name="open-parent" on:click={() => todo.parent && handleViewTodo(todo.parent)}
         ><StyledVectorGraphic>
           <path
             stroke-linecap="round"
@@ -179,7 +193,7 @@
           <StyledButton
             name="view"
             on:click={() => {
-              viewTodo(child);
+              handleViewTodo(child);
             }}
           >
             {#if !child.children.length}

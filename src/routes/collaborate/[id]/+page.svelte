@@ -9,7 +9,7 @@
   let todo: Todo;
   todo ??= Todo.fromObject(data ?? new Todo());
   if (todo) {
-    todo.published = true;
+    todo.publishId = todo.id;
     updateTodo(todo, false);
   }
 </script>

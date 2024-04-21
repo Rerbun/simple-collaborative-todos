@@ -7,5 +7,6 @@
     "editor.defaultFormatter": "svelte.svelte-vscode"
   },
   "editor.formatOnSave": true,
-  "debug.allowBreakpointsEverywhere": true
+  "debug.allowBreakpointsEverywhere": true,
+  "editor.suggest.insertMode": "insert"
 }

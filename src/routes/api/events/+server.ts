@@ -8,7 +8,7 @@ export function POST({ request }) {
     request,
     async start({ emit }) {
       publishedTodo.subscribe((todo) => {
-        console.log(todo.children.map((child) => child.title));
+        if (!todo) return;
         emit('todoUpdate', JSON.stringify(cycle.decycle(todo)));
       });
     },

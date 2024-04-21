@@ -5,7 +5,7 @@ import { source } from 'sveltekit-sse';
 import { Todo } from '../interfaces/Todo';
 import { storeTodo } from '../utils/storage-utils';
 
-export const serializeTodo = (todo: Todo) => {
+export const serializeTodo = (todo: Todo | Record<string, any>) => {
   return JSON.stringify(cycle.decycle(todo));
 };
 
@@ -13,37 +13,67 @@ export const deserializeTodo = (serializedTodo?: string) => {
   return serializedTodo && cycle.retrocycle(JSON.parse(serializedTodo));
 };
 
+// export const deserializeTodo = (serializedTodo?: string) => {
+//   if (!browser) return undefined;
+//   const todoObject: Record<string, any> = cycle.retrocycle(JSON.parse(serializedTodo));
+//   if (serializedTodo && todoObject) return serializedTodo && Todo.fromObject(todoObject);
+//   return undefined;
+// };
+
 const serializedTodo: WritableAtom<string> = atom();
 
-export const todo: ReadableAtom<Todo | undefined> = computed(serializedTodo, deserializeTodo);
+const deserializedTodo: ReadableAtom<Todo | undefined> = computed(serializedTodo, deserializeTodo);
+
+const instancedTodo: WritableAtom<Todo | undefined> = atom(null);
+
+export const todoAtom: ReadableAtom<Todo | undefined> = computed(
+  [deserializedTodo, instancedTodo],
+  (instance, object) => instance || object
+);
 
 source('/api/events')
   .select('todoUpdate')
   .subscribe((todoString) => {
+    if (!todoString) return;
     const updatedTodo = deserializeTodo(todoString);
-    const currentTodo = todo.get();
+    const currentTodo = todoAtom.get();
     if (currentTodo && currentTodo.id === updatedTodo.id) {
-      console.log(updatedTodo.children.map((child) => child.title));
+      updatedTodo.publishId = updatedTodo.id;
       updateTodo(Todo.fromObject(updatedTodo), false);
     }
   });
 
 export const updateTodo = async (todo: Todo, publishUpdate: boolean = true) => {
   storeTodo(todo);
-  if (publishUpdate && todo.published) {
+  if (publishUpdate && todo.publishId) {
     await publishTodo(todo);
   }
+  console.log('Updated todo: ', todo);
   viewTodo(todo);
 };
 
-export const viewTodo = async (todo: Todo) => {
-  let unserializedTodo = browser && todo.published ? await fetchTodoById(todo.id) : todo;
-  serializedTodo.set(serializeTodo(unserializedTodo));
-  console.log(unserializedTodo.children.map((child) => child.title));
+export const viewTodo = async (todoObject: Record<string, any> | Todo) => {
+  let todo = todoObject;
+  todo = todoObject.publishId
+    ? (await fetchTodoById(todoObject.publishId))?.findDescendentById(todo.id) ?? todo
+    : todo;
+  todo = !todo.isInstance ? getInstancedTodo(todo.id) : todo;
+  if (todo.isInstance) {
+    instancedTodo.set(todo as Todo);
+  } else {
+    serializedTodo.set(serializeTodo(todo));
+  }
   browser && window.history.replaceState(null, '', window.location.origin);
 };
 
+const getInstancedTodo = (id: string): Todo => {
+  const todo = todoAtom.get();
+  if (todo?.isInstance) return todo.getApicalParent().findDescendentById(id);
+  return null;
+};
+
 export const publishTodo = async (todo: Todo): Promise<string> => {
+  if (!browser) return;
   const id = await (
     await fetch('/api/todo', {
       method: 'POST',
@@ -57,16 +87,18 @@ export const publishTodo = async (todo: Todo): Promise<string> => {
 };
 
 export const fetchTodoById = async (id: string): Promise<Todo> => {
-  const todo = cycle.retrocycle(
-    await (
-      await fetch(`/api/todo/${id}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      })
-    ).json()
-  );
-  todo.published = true;
-  return Todo.fromObject(todo);
+  if (!browser) return;
+  const response = await fetch(`/api/todo/${id}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+  if (response.status !== 200) {
+    console.error('Failed to fetch todo: ', response);
+    return null;
+  }
+  const todo = Todo.fromObject(cycle.retrocycle(await response.json()));
+  todo.publishId = todo.id;
+  return todo;
 };

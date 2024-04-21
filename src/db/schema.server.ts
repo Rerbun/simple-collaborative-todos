@@ -1,5 +1,5 @@
 import { sql } from 'drizzle-orm';
-import { text, sqliteTable, type AnySQLiteColumn } from 'drizzle-orm/sqlite-core';
+import { text, integer, sqliteTable, type AnySQLiteColumn } from 'drizzle-orm/sqlite-core';
 
 export const todoTable = sqliteTable('todos', {
   id: text('id').primaryKey().unique().notNull(),
@@ -8,6 +8,7 @@ export const todoTable = sqliteTable('todos', {
   }),
   status: text('status').notNull(),
   title: text('title'),
+  index: integer('index'),
 });
 
 export const todChangesTable = sqliteTable('todo_changes', {
@@ -17,5 +18,5 @@ export const todChangesTable = sqliteTable('todo_changes', {
   id: text('id')
     .notNull()
     .references(() => todoTable.id),
-  timestamp: text('timestamp').default(sql`(CURRENT_TIMESTAMP)`),
+  timestamp: text('timestamp').default(sql`(unixepoch())`),
 });

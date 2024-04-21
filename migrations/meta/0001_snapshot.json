@@ -1,8 +1,8 @@
 {
   "version": "5",
   "dialect": "sqlite",
-  "id": "3c0574dd-69ac-4114-8bf3-367fb2273589",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "ff1f7c53-27d9-428f-9a80-4344042f18c1",
+  "prevId": "3c0574dd-69ac-4114-8bf3-367fb2273589",
   "tables": {
     "todo_changes": {
       "name": "todo_changes",
@@ -90,13 +90,12 @@
           "notNull": false,
           "autoincrement": false
         },
-        "creationTime": {
-          "name": "creationTime",
+        "index": {
+          "name": "index",
           "type": "integer",
           "primaryKey": false,
           "notNull": false,
-          "autoincrement": false,
-          "default": "(unixepoch())"
+          "autoincrement": false
         }
       },
       "indexes": {
