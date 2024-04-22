@@ -14,7 +14,7 @@
     "format": "prettier --write .",
     "prepare": "husky",
     "migrate": "npm exec drizzle-kit generate:sqlite",
-    "migrate:clean": "rm -f ./data/sqlite.db ./data/sqlite.dev.db && npm run migrate",
+    "migrate:clean": "rm -rf ./data/sqlite.db ./data/sqlite.dev.db ./migrations && npm run migrate",
     "docker:dev": "docker compose -f docker-compose.dev.yml up --build"
   },
   "devDependencies": {

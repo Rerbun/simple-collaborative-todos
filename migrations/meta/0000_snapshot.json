@@ -1,64 +1,9 @@
 {
   "version": "5",
   "dialect": "sqlite",
-  "id": "3c0574dd-69ac-4114-8bf3-367fb2273589",
+  "id": "60be5714-f1e4-4dda-b141-d2b571fe89d9",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
-    "todo_changes": {
-      "name": "todo_changes",
-      "columns": {
-        "property": {
-          "name": "property",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "old_value": {
-          "name": "old_value",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "new_value": {
-          "name": "new_value",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "id": {
-          "name": "id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "timestamp": {
-          "name": "timestamp",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "autoincrement": false,
-          "default": "(unixepoch())"
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "todo_changes_id_todos_id_fk": {
-          "name": "todo_changes_id_todos_id_fk",
-          "tableFrom": "todo_changes",
-          "tableTo": "todos",
-          "columnsFrom": ["id"],
-          "columnsTo": ["id"],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {}
-    },
     "todos": {
       "name": "todos",
       "columns": {
@@ -90,13 +35,12 @@
           "notNull": false,
           "autoincrement": false
         },
-        "creationTime": {
-          "name": "creationTime",
+        "index": {
+          "name": "index",
           "type": "integer",
           "primaryKey": false,
           "notNull": false,
-          "autoincrement": false,
-          "default": "(unixepoch())"
+          "autoincrement": false
         }
       },
       "indexes": {
