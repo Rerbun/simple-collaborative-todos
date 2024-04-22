@@ -88,7 +88,7 @@ export const publishTodo = async (todo: Todo): Promise<string> => {
   return id;
 };
 
-export const fetchTodoById = async (id: string): Promise<Todo> => {
+const fetchTodoById = async (id: string): Promise<Todo> => {
   if (!browser) return;
   const response = await fetch(`/api/todo/${id}`, {
     method: 'GET',

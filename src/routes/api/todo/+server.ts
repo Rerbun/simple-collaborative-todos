@@ -1,6 +1,6 @@
-import { text, error } from '@sveltejs/kit';
+import { text } from '@sveltejs/kit';
 import cycle from 'cycle';
-import { saveTodo, getTodoById } from '../../../utils/database-utils.server';
+import { saveTodo } from '../../../utils/database-utils.server';
 import type { Todo } from '../../../interfaces/Todo';
 import { publishedTodo } from '../../../stores/collaboration.server';
 

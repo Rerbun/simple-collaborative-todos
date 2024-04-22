@@ -122,7 +122,7 @@
     Activate edit mode, in this mode you can edit the to-dos or change the order
   </div>
   <div class="flex items-center gap-1">
-    <StyledButton name="edit" on:click={handleEditModeToggle}>
+    <StyledButton name="edit">
       <StyledVectorGraphic>
         <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5" />
       </StyledVectorGraphic>
