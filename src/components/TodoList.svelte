@@ -1,12 +1,12 @@
 <script lang="ts">
-  import cycle from 'cycle';
   import { Todo } from '../interfaces/Todo';
   import { todoAtom as computedTodo, publishTodo, updateTodo, viewTodo } from '../stores/todo';
   import { shareLink } from '../utils/navigation-utils';
   import StyledButton from './StyledButton.svelte';
   import StyledVectorGraphic from './StyledVectorGraphic.svelte';
 
-  export let todo: Todo = new Todo();
+  let todo: Todo = new Todo();
+
   let editMode: boolean = false;
 
   computedTodo.listen((value) => {
