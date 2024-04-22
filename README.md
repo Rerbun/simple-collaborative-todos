@@ -6,7 +6,7 @@ The goal of this project is to create a simple website where you can keep your o
 
 **No authentication/log-in required!**
 
-Normally nothing will be stored on the server, everything will be stored in your browser or your shared link. Only when clicking the globe it will store the to-do online also.
+Normally nothing will be stored on the server, everything will be stored in your browser or your shared link. Only when clicking the globe it will store the to-do online also. Then all changes will be updated live too. Note: everyone with your to-do link can update it.
 
 Feel free to create PR's if you have a nice idea, but please keep this project simple.
 
@@ -17,6 +17,7 @@ I don't want changes/improvements for this project to be hidden away from the pu
 - Install Docker.
 - Run `docker compose -f docker-compose.dev.yml up --build` (or `npm run docker:dev` if you have Node installed).
 - Go to http://localhost:3000.
+- For instructions on how to use the app open the info page with the ⓘ button.
 
 # How to develop
 
@@ -33,4 +34,4 @@ I don't want changes/improvements for this project to be hidden away from the pu
 - ~Keep to-dos in local storage and add ability to go through archive~
 - ~Create an archive button to "throw away" all to-dos currently in view and to start with a clean slate~
 - Create import and export button
-- Add live collaboration and database persistence (+ change readme to reflect this)
+- ~Add live collaboration and database persistence (+ change readme to reflect this)~

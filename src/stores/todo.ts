@@ -13,13 +13,6 @@ export const deserializeTodo = (serializedTodo?: string) => {
   return serializedTodo && cycle.retrocycle(JSON.parse(serializedTodo));
 };
 
-// export const deserializeTodo = (serializedTodo?: string) => {
-//   if (!browser) return undefined;
-//   const todoObject: Record<string, any> = cycle.retrocycle(JSON.parse(serializedTodo));
-//   if (serializedTodo && todoObject) return serializedTodo && Todo.fromObject(todoObject);
-//   return undefined;
-// };
-
 const serializedTodo: WritableAtom<string> = atom();
 
 const deserializedTodo: ReadableAtom<Todo | undefined> = computed(serializedTodo, deserializeTodo);
@@ -50,14 +43,18 @@ export const updateTodo = async (todo: Todo, publishUpdate: boolean = true) => {
     await publishTodo(todo.getApicalParent() as Todo);
   }
   console.log('Updated todo: ', todo);
-  viewTodo(todo);
+  viewTodo(todo, publishUpdate);
 };
 
-export const viewTodo = async (todoObject: Record<string, any> | Todo) => {
+export const viewTodo = async (
+  todoObject: Record<string, any> | Todo,
+  fetchLatest: boolean = true
+) => {
   let todo = todoObject;
-  todo = todoObject.publishId
-    ? (await fetchTodoById(todoObject.publishId))?.findDescendentById(todo.id) ?? todo
-    : todo;
+  todo =
+    todoObject.publishId && fetchLatest
+      ? (await fetchTodoById(todoObject.publishId))?.findDescendantById(todo.id) ?? todo
+      : todo;
   todo = !todo.isInstance ? getInstancedTodo(todo.id) : todo;
   if (todo.isInstance) {
     instancedTodo.set(todo as Todo);
@@ -69,7 +66,7 @@ export const viewTodo = async (todoObject: Record<string, any> | Todo) => {
 
 const getInstancedTodo = (id: string): Todo => {
   const todo = todoAtom.get();
-  if (todo?.isInstance) return todo.getApicalParent().findDescendentById(id);
+  if (todo?.isInstance) return todo.getApicalParent().findDescendantById(id);
   return null;
 };
 

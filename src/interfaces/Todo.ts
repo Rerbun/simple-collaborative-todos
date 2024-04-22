@@ -31,15 +31,6 @@ export class Todo {
     return Todo.getApicalParent(this);
   }
 
-  // public getPublishedAncestorId(): string {
-  //   if (this.publishId) {
-  //     return this.parent
-  //       ? Todo.fromObject(this.parent)?.getPublishedAncestorId() ?? this.id
-  //       : this.id;
-  //   }
-  //   return undefined;
-  // }
-
   constructor(title?: string, parent?: Todo) {
     this.title = (title ?? this.title)?.trim();
     this.parent = parent;
@@ -51,26 +42,19 @@ export class Todo {
   }
 
   // TODO: Rename descendent to descendant
-  public findDescendentById(id: string): Todo {
+  public findDescendantById(id: string): Todo {
     if (this.id === id) return this;
     for (const child of this.children) {
-      const found = child.findDescendentById(id);
+      const found = child.findDescendantById(id);
       if (found) return found;
     }
     return undefined;
   }
 
   public static fromObject(object: Record<string, any>): Todo {
-    // if (object.parent) object.parent = Todo.fromObject(object.parent);
     const apicalIntance = Object.assign(new Todo(), Todo.getApicalParent(object));
     apicalIntance.children = Todo.convertChildrenToInstances(apicalIntance.children, apicalIntance);
-    return apicalIntance.findDescendentById(object.id);
-
-    // const instance = Object.assign(new Todo(), { ...object, parent: parentReference });
-    // instance.children = object.children?.map((child: Record<string, any>) =>
-    //   Todo.fromObject(child, instance)
-    // );
-    // return instance;
+    return apicalIntance.findDescendantById(object.id);
   }
 
   private static convertChildrenToInstances(children: Record<string, any>[], parent: Todo): Todo[] {
