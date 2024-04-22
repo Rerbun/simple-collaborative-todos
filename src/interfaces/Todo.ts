@@ -41,7 +41,6 @@ export class Todo {
     return Object.assign(new Todo(), this);
   }
 
-  // TODO: Rename descendent to descendant
   public findDescendantById(id: string): Todo {
     if (this.id === id) return this;
     for (const child of this.children) {
