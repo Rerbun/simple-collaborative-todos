@@ -24,17 +24,31 @@ export const todoAtom: ReadableAtom<Todo | undefined> = computed(
   (instance, object) => instance || object
 );
 
-source('/api/events')
-  .select('todoUpdate')
-  .subscribe((todoString) => {
-    if (!todoString) return;
-    const updatedTodo = deserializeTodo(todoString);
-    const currentTodo = instancedTodo.get();
-    if (currentTodo && currentTodo.findDescendantById(updatedTodo.id)) {
-      updatedTodo.publishId = updatedTodo.id;
-      updateTodo(Todo.fromObject(updatedTodo), false);
-    }
-  });
+let sse: { todoId: string; subscription: any };
+todoAtom.listen((todo) => sseHandler(todo?.publishId));
+const sseHandler = (todoId: string) => {
+  if (todoId && sse.todoId !== todoId) {
+    sse?.subscription?.close();
+    sse = {
+      todoId,
+      subscription: source(
+        '/api/events',
+        // @ts-ignore
+        { options: { headers: { 'todo-id': todoId } } }
+      )
+        .select('todoUpdate')
+        .subscribe((todoString) => {
+          if (!todoString) return;
+          const updatedTodo = deserializeTodo(todoString);
+          const currentTodo = instancedTodo.get();
+          if (currentTodo && currentTodo.findDescendantById(updatedTodo.id)) {
+            updatedTodo.publishId = updatedTodo.id;
+            updateTodo(Todo.fromObject(updatedTodo), false);
+          }
+        }),
+    };
+  }
+};
 
 export const updateTodo = async (todo: Todo, publishUpdate: boolean = true) => {
   storeTodo(todo);
