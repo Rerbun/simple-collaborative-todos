@@ -13,8 +13,9 @@
     "lint": "prettier --check .",
     "format": "prettier --write .",
     "prepare": "husky",
+    "remove-databases": "rm -f ./data/sqlite.db ./data/sqlite.dev.db",
     "migrate": "npm exec drizzle-kit generate:sqlite",
-    "migrate:clean": "rm -rf ./data/sqlite.db ./data/sqlite.dev.db ./migrations && npm run migrate",
+    "migrate:clean": "npm run remove-databases && rm -rf ./migrations && npm run migrate",
     "docker:dev": "docker compose -f docker-compose.dev.yml up --build"
   },
   "devDependencies": {

@@ -29,8 +29,8 @@ source('/api/events')
   .subscribe((todoString) => {
     if (!todoString) return;
     const updatedTodo = deserializeTodo(todoString);
-    const currentTodo = todoAtom.get();
-    if (currentTodo && currentTodo.id === updatedTodo.id) {
+    const currentTodo = instancedTodo.get();
+    if (currentTodo && currentTodo.findDescendantById(updatedTodo.id)) {
       updatedTodo.publishId = updatedTodo.id;
       updateTodo(Todo.fromObject(updatedTodo), false);
     }
