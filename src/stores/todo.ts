@@ -24,39 +24,38 @@ export const todoAtom: ReadableAtom<Todo | undefined> = computed(
   (instance, object) => instance || object
 );
 
-let sse: { todoId: string; subscription: any };
+let sse: { todoId: string; subscription: any } = { todoId: null, subscription: null };
 todoAtom.listen((todo) => sseHandler(todo?.publishId));
 const sseHandler = (todoId: string) => {
-  if (todoId && sse.todoId !== todoId) {
+  if (sse.todoId !== todoId) {
     sse?.subscription?.close();
-    sse = {
-      todoId,
-      subscription: source(
-        '/api/events',
-        // @ts-ignore
-        { options: { headers: { 'todo-id': todoId } } }
-      )
-        .select('todoUpdate')
-        .subscribe((todoString) => {
-          if (!todoString) return;
-          const updatedTodo = deserializeTodo(todoString);
-          const currentTodo = instancedTodo.get();
-          if (currentTodo && currentTodo.findDescendantById(updatedTodo.id)) {
-            updatedTodo.publishId = updatedTodo.id;
-            updateTodo(Todo.fromObject(updatedTodo), false);
-          }
-        }),
-    };
+    if (todoId) {
+      sse = {
+        todoId,
+        subscription: source(
+          '/api/events',
+          // @ts-ignore
+          { options: { headers: { 'todo-id': todoId } } }
+        ),
+      };
+      sse.subscription.select('todoUpdate').subscribe((todoString: string) => {
+        if (!todoString) return;
+        const updatedTodo = deserializeTodo(todoString);
+        const currentTodo = instancedTodo.get();
+        if (currentTodo && currentTodo.findDescendantById(updatedTodo.id)) {
+          updatedTodo.publishId = updatedTodo.id;
+          updateTodo(Todo.fromObject(updatedTodo), false);
+        }
+      });
+    }
   }
 };
 
 export const updateTodo = async (todo: Todo, publishUpdate: boolean = true) => {
   storeTodo(todo);
   if (publishUpdate && todo.publishId && todo.isInstance) {
-    console.log('Upserting: ', todo);
     await publishTodo(todo.getApicalParent() as Todo);
   }
-  console.log('Updated todo: ', todo);
   viewTodo(todo, publishUpdate);
 };
 
@@ -86,7 +85,6 @@ const getInstancedTodo = (id: string): Todo => {
 
 export const publishTodo = async (todo: Todo): Promise<string> => {
   if (!browser) return;
-  console.log('Publishing: ', todo);
   const id = await (
     await fetch('/api/todo', {
       method: 'POST',

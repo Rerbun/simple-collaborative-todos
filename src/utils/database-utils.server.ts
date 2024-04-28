@@ -67,7 +67,6 @@ export const saveTodo = async (todo: Todo, index: number = null) => {
 
   if (children.length > 0) {
     const childPromises = children.map((child, index) => {
-      console.log('Index: ', index);
       saveTodo(child, index);
     });
     await Promise.all(childPromises);

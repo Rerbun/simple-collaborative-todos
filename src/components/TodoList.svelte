@@ -27,7 +27,6 @@
     if (parentTodo.publishId) newTodo.publishId = parentTodo.publishId;
 
     parentTodo.children.push(newTodo);
-    console.log(parentTodo.children[0].publishId);
     updateTodo(parentTodo);
 
     event.target.reset();
@@ -71,7 +70,6 @@
 
     if (id) {
       todo.publishId = id;
-      console.log('Published:', todo.publishId);
       updateTodo(todo, false);
     }
   };
