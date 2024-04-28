@@ -9,7 +9,7 @@
 
   let editMode: boolean = false;
 
-  computedTodo.listen((value) => {
+  computedTodo.subscribe((value) => {
     todo = Todo.fromObject(value);
   });
 

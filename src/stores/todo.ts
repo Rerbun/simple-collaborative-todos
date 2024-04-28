@@ -1,9 +1,9 @@
 import { browser } from '$app/environment';
 import { atom, computed, type ReadableAtom, type WritableAtom } from 'nanostores';
 import cycle from 'cycle';
-import { source } from 'sveltekit-sse';
 import { Todo } from '../interfaces/Todo';
 import { storeTodo } from '../utils/storage-utils';
+import { initSSE } from '../utils/sse-utils';
 
 export const serializeTodo = (todo: Todo | Record<string, any>) => {
   return JSON.stringify(cycle.decycle(todo));
@@ -21,35 +21,21 @@ const instancedTodo: WritableAtom<Todo | undefined> = atom(null);
 
 export const todoAtom: ReadableAtom<Todo | undefined> = computed(
   [deserializedTodo, instancedTodo],
-  (instance, object) => instance || object
+  (object, instance) => instance || object
 );
 
-let sse: { todoId: string; subscription: any } = { todoId: null, subscription: null };
-todoAtom.listen((todo) => sseHandler(todo?.publishId));
-const sseHandler = (todoId: string) => {
-  if (sse.todoId !== todoId) {
-    sse?.subscription?.close();
-    if (todoId) {
-      sse = {
-        todoId,
-        subscription: source(
-          '/api/events',
-          // @ts-ignore
-          { options: { headers: { 'todo-id': todoId } } }
-        ),
-      };
-      sse.subscription.select('todoUpdate').subscribe((todoString: string) => {
-        if (!todoString) return;
-        const updatedTodo = deserializeTodo(todoString);
-        const currentTodo = instancedTodo.get();
-        if (currentTodo && currentTodo.findDescendantById(updatedTodo.id)) {
-          updatedTodo.publishId = updatedTodo.id;
-          updateTodo(Todo.fromObject(updatedTodo), false);
-        }
-      });
-    }
+const onUpdateReceived = (todoString: string) => {
+  if (!todoString) return;
+  const updatedTodo = deserializeTodo(todoString);
+  const currentTodo = instancedTodo.get();
+  if (currentTodo && currentTodo.findDescendantById(updatedTodo.id)) {
+    updatedTodo.publishId = updatedTodo.id;
+    updateTodo(Todo.fromObject(updatedTodo), false);
   }
 };
+
+// Re-initialize SSE when the publishId changes
+todoAtom.listen((todo) => initSSE(todo?.publishId, onUpdateReceived));
 
 export const updateTodo = async (todo: Todo, publishUpdate: boolean = true) => {
   storeTodo(todo);
