@@ -18,16 +18,17 @@ export const getLastTodo = (): Todo | undefined => {
 };
 
 export const storeTodo = (todo: Todo) => {
-  storeAction(todo);
-  spliceArchice(todo);
+  const apicalParent = todo.getApicalParent();
+  storeAction(apicalParent);
+  spliceArchice(apicalParent);
 };
 
 export const removeFromArchive = (todo: Todo) => {
-  spliceArchice(todo, true);
+  spliceArchice(todo.getApicalParent(), true);
 };
 
-const spliceArchice = (todo: Todo, remove = false) => {
-  let archivedTodos = getArchivedTodos();
+const spliceArchice = (todo: Todo | Record<string, any>, remove = false) => {
+  let archivedTodos: Todo[] | Record<string, any>[] = getArchivedTodos();
 
   const todoIndex = archivedTodos.findIndex(({ id }) => todo.id === id);
   // Splice only adds to end if -array.length <= start < 0, so manually add it to the end of the array if index === -1
@@ -40,7 +41,7 @@ const spliceArchice = (todo: Todo, remove = false) => {
     localStorage?.setItem(ARCHIVED_TODOS_KEY, JSON.stringify(archivedTodos.map(cycle.decycle)));
 };
 
-const storeAction = (todo: Todo) => {
+const storeAction = (todo: Todo | Record<string, any>) => {
   browser &&
     localStorage.setItem(
       TODO_ACTION_HISTORY_KEY,

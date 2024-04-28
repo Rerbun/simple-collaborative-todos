@@ -2,5 +2,7 @@ services:
   app:
     container_name: 'simple-collaborative-todos'
     build: .
+    volumes:
+      - ./data:/data
     ports:
       - '3000:3000'

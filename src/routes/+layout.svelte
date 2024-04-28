@@ -4,7 +4,7 @@
   import TodoList from '../components/TodoList.svelte';
   import { Todo } from '../interfaces/Todo';
   import { getArchivedTodos, removeFromArchive } from '../utils/storage-utils';
-  import { todo as computedTodo, viewTodo } from '../stores/todo';
+  import { todoAtom as computedTodo, viewTodo } from '../stores/todo';
   import StyledVectorGraphic from '../components/StyledVectorGraphic.svelte';
   import StyledButton from '../components/StyledButton.svelte';
 
@@ -13,12 +13,13 @@
   let nextTodos: Todo[] = [];
 
   computedTodo.listen((value) => {
-    todoInstance = value;
+    todoInstance = Todo.fromObject(value);
     const archivedTodos = getArchivedTodos();
 
     const currentIndex = archivedTodos.findIndex((todo) => todo.id === todoInstance.id);
     if (currentIndex > -1) {
       previousTodo = archivedTodos[currentIndex - 1];
+      nextTodos = archivedTodos.slice(currentIndex + 1);
     } else {
       previousTodo = archivedTodos.at(-1);
     }
@@ -39,8 +40,8 @@
     viewTodo(new Todo());
   };
 
-  const remove = (todo: Todo) => {
-    removeFromArchive(todo);
+  const remove = (todo: Record<string, any>) => {
+    removeFromArchive(Todo.fromObject(todo));
     const [nextTodo] = nextTodos;
     viewTodo(previousTodo ?? nextTodo ?? new Todo());
   };
@@ -106,6 +107,6 @@
       </div>
     </div>
     <hr class="my-4 bg-gray-500 dark:bg-gray-300" />
-    <TodoList todo={todoInstance ?? new Todo()}></TodoList>
+    <TodoList></TodoList>
   {/if}
 </div>

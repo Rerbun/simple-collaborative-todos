@@ -1,34 +1,44 @@
 <script lang="ts">
   import { Todo } from '../interfaces/Todo';
-  import { updateTodo, viewTodo } from '../stores/todo';
-  import { share } from '../utils/navigation-utils';
+  import { todoAtom as computedTodo, publishTodo, updateTodo, viewTodo } from '../stores/todo';
+  import { shareLink } from '../utils/navigation-utils';
   import StyledButton from './StyledButton.svelte';
   import StyledVectorGraphic from './StyledVectorGraphic.svelte';
 
-  export let todo: Todo;
+  let todo: Todo = new Todo();
+
   let editMode: boolean = false;
 
-  const handleCheck = (event: Event, touchedTodo: Todo) => {
+  computedTodo.subscribe((value) => {
+    todo = Todo.fromObject(value);
+  });
+
+  const handleCheck = (event: Event, touchedTodo: Record<string, any>) => {
     touchedTodo.status = (event.target as HTMLInputElement).checked ? 'checked' : 'unchecked';
-    updateTodo(todo);
+    updateTodo(Todo.fromObject(todo));
   };
 
-  const handleChildSubmit = (event, parent: Todo = todo) => {
-    const newTodo = new Todo((new FormData(event.target).get('new-todo') as string) ?? '', parent);
+  const handleChildSubmit = (event, parent: Record<string, any> = todo) => {
+    const parentTodo = Todo.fromObject(parent);
+    const newTodo = new Todo(
+      (new FormData(event.target).get('new-todo') as string) ?? '',
+      parentTodo
+    );
+    if (parentTodo.publishId) newTodo.publishId = parentTodo.publishId;
 
-    parent.children.push(newTodo);
-    updateTodo(todo);
+    parentTodo.children.push(newTodo);
+    updateTodo(parentTodo);
 
     event.target.reset();
   };
 
   const handleChildRemoveByIndex = (index: number) => {
     todo.children.splice(index, 1);
-    updateTodo(todo);
+    updateTodo(Todo.fromObject(todo));
   };
 
   const handleEditModeToggle = () => {
-    editMode && updateTodo(todo);
+    editMode && updateTodo(Todo.fromObject(todo));
     editMode = !editMode;
   };
 
@@ -37,13 +47,30 @@
     const swapIndex = currentIndex + modifier;
     todo.children[currentIndex] = todo.children[swapIndex];
     todo.children[swapIndex] = sortedTodo;
-    updateTodo(todo);
+    updateTodo(Todo.fromObject(todo));
   };
 
   const handleContentEditCompleted = (event: KeyboardEvent) => {
     if (event.key === 'Enter') {
       event.preventDefault();
       (event.target as HTMLElement).blur();
+    }
+  };
+
+  const handleViewTodo = (todoObject: Record<string, any>) => {
+    if (todoObject.parent && todoObject.parent?.id === todo.id) {
+      todoObject.parent = todo;
+    }
+    viewTodo(todoObject);
+  };
+
+  const publish = async (todoObject: Record<string, any>) => {
+    const todo = Todo.fromObject(todoObject);
+    const id = await publishTodo(todo);
+
+    if (id) {
+      todo.publishId = id;
+      updateTodo(todo, false);
     }
   };
 </script>
@@ -64,7 +91,7 @@
       </StyledVectorGraphic>
     </StyledButton>
     {#if !editMode}
-      <StyledButton name="share" on:click={() => share(todo)}
+      <StyledButton name="share" on:click={() => shareLink(Todo.fromObject(todo))}
         ><StyledVectorGraphic>
           <path
             stroke-linecap="round"
@@ -73,9 +100,28 @@
           />
         </StyledVectorGraphic>
       </StyledButton>
+      {#if !todo.publishId}
+        <StyledButton name="publish" on:click={() => publish(Todo.fromObject(todo))}
+          ><StyledVectorGraphic>
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M12 21a9.004 9.004 0 0 0 8.716-6.747M12 21a9.004 9.004 0 0 1-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 0 1 7.843 4.582M12 3a8.997 8.997 0 0 0-7.843 4.582m15.686 0A11.953 11.953 0 0 1 12 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0 1 21 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0 1 12 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 0 1 3 12c0-1.605.42-3.113 1.157-4.418"
+            />
+          </StyledVectorGraphic>
+        </StyledButton>
+      {:else}
+        <StyledVectorGraphic>
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M12 21a9.004 9.004 0 0 0 8.716-6.747M12 21a9.004 9.004 0 0 1-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 0 1 7.843 4.582M12 3a8.997 8.997 0 0 0-7.843 4.582m15.686 0A11.953 11.953 0 0 1 12 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0 1 21 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0 1 12 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 0 1 3 12c0-1.605.42-3.113 1.157-4.418"
+          />
+        </StyledVectorGraphic>
+      {/if}
     {/if}
     {#if todo.parent}
-      <StyledButton name="open-parent" on:click={() => todo.parent && viewTodo(todo.parent)}
+      <StyledButton name="open-parent" on:click={() => todo.parent && handleViewTodo(todo.parent)}
         ><StyledVectorGraphic>
           <path
             stroke-linecap="round"
@@ -145,7 +191,7 @@
           <StyledButton
             name="view"
             on:click={() => {
-              viewTodo(child);
+              handleViewTodo(child);
             }}
           >
             {#if !child.children.length}
