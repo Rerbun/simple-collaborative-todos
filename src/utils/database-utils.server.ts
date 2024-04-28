@@ -3,7 +3,7 @@ import { drizzle } from 'drizzle-orm/better-sqlite3';
 import { migrate } from 'drizzle-orm/better-sqlite3/migrator';
 import Database from 'better-sqlite3';
 import { eq, desc, inArray } from 'drizzle-orm';
-import { pick } from 'lodash-es';
+import { pick, once } from 'lodash-es';
 import { Todo } from '../interfaces/Todo';
 import { todoTable } from '../db/schema.server';
 
@@ -12,7 +12,7 @@ const sqlite = new Database(
 );
 const db = drizzle(sqlite);
 
-migrate(db, { migrationsFolder: 'migrations' });
+once(() => migrate(db, { migrationsFolder: 'migrations' }));
 
 export const getTodoById = async (id: string) => {
   const todoEntry: Record<string, any> = (
