@@ -10,7 +10,7 @@
   let editMode: boolean = false;
 
   computedTodo.subscribe((value) => {
-    todo = Todo.fromObject(value);
+    if (value) todo = Todo.fromObject(value);
   });
 
   const handleCheck = (event: Event, touchedTodo: Record<string, any>) => {

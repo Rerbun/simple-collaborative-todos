@@ -1,18 +1,8 @@
-import path from 'path';
-import { drizzle } from 'drizzle-orm/better-sqlite3';
-import { migrate } from 'drizzle-orm/better-sqlite3/migrator';
-import Database from 'better-sqlite3';
 import { eq, desc, inArray } from 'drizzle-orm';
-import { pick, once } from 'lodash-es';
+import { pick } from 'lodash-es';
 import { Todo } from '../interfaces/Todo';
 import { todoTable } from '../db/schema.server';
-
-const sqlite = new Database(
-  path.resolve(process.env.NODE_ENV === 'production' ? '/data/sqlite.db' : 'data/sqlite.dev.db')
-);
-const db = drizzle(sqlite);
-
-once(() => migrate(db, { migrationsFolder: 'migrations' }));
+import { db } from '../db/init.server';
 
 export const getTodoById = async (id: string) => {
   const todoEntry: Record<string, any> = (
